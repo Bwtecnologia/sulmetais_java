@@ -26,8 +26,8 @@ public class GroupController {
     }
 
     @GetMapping(value = "/groups/{id}")
-    public ResponseEntity<GroupModel> findById(@PathVariable("id") int id) {
-        GroupModel group = groupService.findById(id)
+    public ResponseEntity<GroupModel> findById(@PathVariable("id") Long id) {
+        GroupModel group = groupService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
         return ResponseEntity.ok().body(group);
     }
@@ -43,8 +43,8 @@ public class GroupController {
     }
 
     @PutMapping(value = "/groups/{id}")
-    public ResponseEntity<GroupModel> updateGroup(@PathVariable("id") int id, @RequestBody GroupModel groupUpdate) {
-        GroupModel group = groupService.findById(id)
+    public ResponseEntity<GroupModel> updateGroup(@PathVariable("id") Long id, @RequestBody GroupModel groupUpdate) {
+        GroupModel group = groupService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
         group.setGroupDescription(groupUpdate.getGroupDescription());
         group.setUpdatedAt(new Date());
@@ -53,10 +53,10 @@ public class GroupController {
         return ResponseEntity.ok(updatedGroup);
     }
     @DeleteMapping(value = "/groups/{id}")
-    public ResponseEntity<String> deleteGroup(@PathVariable("id") int id){
-        GroupModel group = groupService.findById(id)
+    public ResponseEntity<String> deleteGroup(@PathVariable("id") Long id){
+        GroupModel group = groupService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
-        groupService.deleteById(group.getId());
+        groupService.deleteById(Math.toIntExact(group.getId()));
         return ResponseEntity.ok("Group with ID :"+id+" is deleted");
     }
 }

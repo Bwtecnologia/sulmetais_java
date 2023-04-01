@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 public class UserModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "name", nullable = false)
     private  String name;
     @Column(name = "email", nullable = false)

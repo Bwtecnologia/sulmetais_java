@@ -74,10 +74,10 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) {
-        UserModel user = userService.findById(id)
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
+        UserModel user = userService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new UserNotFoundException("User with " + id + " is Not Found!"));
-        userService.deleteById(user.getId());
+        userService.deleteById(Math.toIntExact(user.getId()));
 
         String message = "User with ID " + id + " is deleted";
         return ResponseEntity.ok(message);
@@ -94,7 +94,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody UserModel userCheck) {
         Optional<UserModel> user = userService.findByLogin(userCheck.getLogin());
-        int userId = user.get().getId();
+        int userId = Math.toIntExact(user.get().getId());
         if (user.isPresent() && user.get().getPassword().equals(userCheck.getPassword())) {
             String message = "Logged in successfully";
             LoginResponse loginResponse = new LoginResponse(message, userId);

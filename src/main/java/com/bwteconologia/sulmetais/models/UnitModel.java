@@ -1,5 +1,7 @@
 package com.bwteconologia.sulmetais.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +22,7 @@ import java.util.List;
 public class UnitModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @Column(name = "unit_size", nullable = false)
     private String unitSize;
     @Temporal(TemporalType.TIMESTAMP)
@@ -31,6 +33,7 @@ public class UnitModel {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "unit")
     private List<ProductModel> products;
 

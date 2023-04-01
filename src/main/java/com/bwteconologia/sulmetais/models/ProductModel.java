@@ -1,5 +1,6 @@
 package com.bwteconologia.sulmetais.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +24,14 @@ public class ProductModel {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
-    @Column(name = "product_buy", nullable = false)
+    @Column(name = "product_buy")
     private Boolean productBuy;
+
+    @Column(name = "product_fabricated")
+    private Boolean productFabricated;
+
+    @Column(name = "product_generic")
+    private Boolean productGeneric;
 
     @Column(name = "product_primary")
     private Boolean productPrimary;

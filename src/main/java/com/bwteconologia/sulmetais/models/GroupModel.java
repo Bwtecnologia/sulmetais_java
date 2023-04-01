@@ -1,5 +1,7 @@
 package com.bwteconologia.sulmetais.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +22,12 @@ import java.util.List;
 public class GroupModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "group_description")
     private String groupDescription;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "group")
     private List<ProductModel> products;
     @Temporal(TemporalType.TIMESTAMP)

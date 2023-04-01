@@ -12,12 +12,9 @@ import java.util.Optional;
 @Service
 public class ProductService implements IProduct {
 
+    @Autowired
     ProductRepository productRepository;
 
-    @Autowired
-    public ProductService(ProductRepository productRepository){
-        this.productRepository = productRepository;
-    }
     @Override
     public List<ProductModel> getAllProducts() {
         return productRepository.findAll();

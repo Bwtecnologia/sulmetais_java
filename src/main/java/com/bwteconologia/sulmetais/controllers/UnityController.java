@@ -28,8 +28,8 @@ public class UnityController {
     }
 
     @GetMapping(value = "/units/{id}")
-    public ResponseEntity<UnitModel> updateUnit(@PathVariable("id") int id) {
-        UnitModel unit = unitService.findById(id)
+    public ResponseEntity<UnitModel> updateUnit(@PathVariable("id") Long id) {
+        UnitModel unit = unitService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new UnitNotFoundException("Unit with " + id + " is Not Found!"));
         return ResponseEntity.ok(unit);
     }
@@ -56,10 +56,10 @@ public class UnityController {
         return ResponseEntity.ok().body(updatedUnit);
     }
     @DeleteMapping(value = "/units/{id}")
-    public ResponseEntity<String> deleteUnit(@PathVariable("id") int id) {
-        UnitModel unit = unitService.findById(id)
+    public ResponseEntity<String> deleteUnit(@PathVariable("id") Long id) {
+        UnitModel unit = unitService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new UnitNotFoundException("Unit with " + id + " is Not Found!"));
-        unitService.deleteById(unit.getId());
+        unitService.deleteById(Math.toIntExact(unit.getId()));
         String message = "Unit with ID: " + id + " has been deleted.";
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
