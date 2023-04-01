@@ -5,6 +5,7 @@ import com.bwteconologia.sulmetais.exceptions.GroupNotFoundException;
 import com.bwteconologia.sulmetais.models.GroupModel;
 import com.bwteconologia.sulmetais.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -19,40 +20,43 @@ public class GroupController {
 
 
     @GetMapping(value = "/groups")
-    public List<GroupModel> getAllGroups() {
-        return groupService.getAllGroups();
+    public ResponseEntity<List<GroupModel>> getAllGroups() {
+        List<GroupModel> groups = groupService.getAllGroups();
+        return ResponseEntity.ok(groups);
     }
 
     @GetMapping(value = "/groups/{id}")
-    public GroupModel findById(@PathVariable("id") int id) {
+    public ResponseEntity<GroupModel> findById(@PathVariable("id") int id) {
         GroupModel group = groupService.findById(id)
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
-        return group;
+        return ResponseEntity.ok().body(group);
     }
 
     @PostMapping(value = "/groups")
-    public GroupModel addGroup(@RequestBody GroupModel group) {
+    public ResponseEntity<GroupModel> addGroup(@RequestBody GroupModel group) {
         Optional<GroupModel> existsGroup = groupService.findByGroupDescription(group.getGroupDescription());
-        if(existsGroup != null){
+        if (existsGroup.isPresent()) {
             throw new GroupAlreadyExistsException("Group already exists");
         }
-        return groupService.save(group);
+        GroupModel savedGroup = groupService.save(group);
+        return ResponseEntity.ok(savedGroup);
     }
 
     @PutMapping(value = "/groups/{id}")
-    public GroupModel updateGroup(@PathVariable("id") int id, @RequestBody GroupModel groupUpdate) {
+    public ResponseEntity<GroupModel> updateGroup(@PathVariable("id") int id, @RequestBody GroupModel groupUpdate) {
         GroupModel group = groupService.findById(id)
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
         group.setGroupDescription(groupUpdate.getGroupDescription());
         group.setUpdatedAt(new Date());
 
-        return groupService.save(group);
+        GroupModel updatedGroup = groupService.save(group);
+        return ResponseEntity.ok(updatedGroup);
     }
     @DeleteMapping(value = "/groups/{id}")
-    public String deleteGroup(@PathVariable("id") int id){
+    public ResponseEntity<String> deleteGroup(@PathVariable("id") int id){
         GroupModel group = groupService.findById(id)
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
         groupService.deleteById(group.getId());
-        return "Group with ID :"+id+" is deleted";
+        return ResponseEntity.ok("Group with ID :"+id+" is deleted");
     }
 }

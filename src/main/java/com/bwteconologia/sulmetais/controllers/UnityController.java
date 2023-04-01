@@ -5,6 +5,8 @@ import com.bwteconologia.sulmetais.exceptions.UserAlreadyExistsException;
 import com.bwteconologia.sulmetais.models.UnitModel;
 import com.bwteconologia.sulmetais.services.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -18,42 +20,48 @@ public class UnityController {
     UnitService unitService;
 
 
+
     @GetMapping(value = "/units")
-    public List<UnitModel> getAllUnits() {
-        return unitService.getAllUnits();
+    public ResponseEntity<List<UnitModel>> getAllUnits() {
+        List<UnitModel> units = unitService.getAllUnits();
+        return ResponseEntity.ok().body(units);
     }
 
     @GetMapping(value = "/units/{id}")
-    public UnitModel updateUnit(@PathVariable("id") int id) {
+    public ResponseEntity<UnitModel> updateUnit(@PathVariable("id") int id) {
         UnitModel unit = unitService.findById(id)
                 .orElseThrow(() -> new UnitNotFoundException("Unit with " + id + " is Not Found!"));
-        return unit;
+        return ResponseEntity.ok(unit);
     }
-
     @PostMapping(value = "/units")
-    public UnitModel addUnit(@RequestBody UnitModel unit) {
+    public ResponseEntity<UnitModel> addUnit(@RequestBody UnitModel unit) {
         Optional<UnitModel> existsUnit = unitService.findByUnitSize(unit.getUnitSize());
-        if(existsUnit != null){
-            throw new UserAlreadyExistsException("User already exists");
+        if (existsUnit.isPresent()) {
+            throw new UserAlreadyExistsException("Unit already exists");
         }
-        return unitService.save(unit);
+        UnitModel savedUnit = unitService.save(unit);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUnit);
     }
 
     @PutMapping(value = "/units/{id}")
-    public UnitModel updateUnit(@PathVariable("id") int id, @RequestBody UnitModel unitUpdated) {
+    public ResponseEntity<UnitModel> updateUnit(@PathVariable("id") int id, @RequestBody UnitModel unitUpdated) {
         UnitModel unit = unitService.findById(id)
                 .orElseThrow(() -> new UnitNotFoundException("Unit with " + id + " is Not Found!"));
+
         unit.setUnitSize(unitUpdated.getUnitSize());
         unit.setUpdatedAt(new Date());
 
-        return unitService.save(unit);
+        UnitModel updatedUnit = unitService.save(unit);
+
+        return ResponseEntity.ok().body(updatedUnit);
     }
     @DeleteMapping(value = "/units/{id}")
-    public String deleteUnit(@PathVariable("id") int id){
-        UnitModel user = unitService.findById(id)
+    public ResponseEntity<String> deleteUnit(@PathVariable("id") int id) {
+        UnitModel unit = unitService.findById(id)
                 .orElseThrow(() -> new UnitNotFoundException("Unit with " + id + " is Not Found!"));
-        unitService.deleteById(user.getId());
-        return "Unit with ID :"+id+" is deleted";
+        unitService.deleteById(unit.getId());
+        String message = "Unit with ID: " + id + " has been deleted.";
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
 }

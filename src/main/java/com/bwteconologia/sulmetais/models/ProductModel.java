@@ -26,11 +26,11 @@ public class ProductModel {
     @Column(name = "product_buy", nullable = false)
     private Boolean productBuy;
 
-    @Column(name = "product_primary", nullable = false)
+    @Column(name = "product_primary")
     private Boolean productPrimary;
-    @Column(name = "product_intermediary", nullable = false)
+    @Column(name = "product_intermediary")
     private Boolean productIntermediary;
-    @Column(name = "product_final", nullable = false)
+    @Column(name = "product_final")
     private Boolean productFinal;
     @Column(name = "Product_price", nullable = false)
     private Float productPrice;

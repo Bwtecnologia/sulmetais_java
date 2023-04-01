@@ -6,6 +6,8 @@ import com.bwteconologia.sulmetais.exceptions.ProductNotFoundException;
 import com.bwteconologia.sulmetais.models.ProductModel;
 import com.bwteconologia.sulmetais.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -19,28 +21,30 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping(value = "/products")
-    public List<ProductModel> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<ProductModel>> getAllProducts() {
+        List<ProductModel> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping(value = "/products/{id}")
-    public ProductModel findById(@PathVariable("id") int id) {
+    public ResponseEntity<ProductModel> findById(@PathVariable("id") int id) {
         ProductModel product = productService.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with " + id + " is Not Found!"));
-        return product;
+        return ResponseEntity.ok(product);
     }
 
     @PostMapping(value = "/product")
-    public ProductModel addProduct(@RequestBody ProductModel product) {
+    public ResponseEntity<ProductModel> addProduct(@RequestBody ProductModel product) {
         Optional<ProductModel> existsProduct = productService.findByProductName(product.getProductName());
-        if(existsProduct != null){
+        if (existsProduct.isPresent()) {
             throw new ProductAlreadyExistsException("Product already exists");
         }
-        return productService.save(product);
+        ProductModel savedProduct = productService.save(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
 
     @PutMapping(value = "/product/{id}")
-    public ProductModel updateProduct(@PathVariable("id") int id, @RequestBody ProductModel productUpdated) {
+    public ResponseEntity<ProductModel> updateProduct(@PathVariable("id") int id, @RequestBody ProductModel productUpdated) {
         ProductModel product = productService.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Group with " + id + " is Not Found!"));
         product.setProductName(productUpdated.getProductName());
@@ -51,14 +55,15 @@ public class ProductController {
         product.setProductPrice(productUpdated.getProductPrice());
         product.setUpdatedAt(new Date());
 
-        return productService.save(product);
+        ProductModel updatedProduct = productService.save(product);
+        return ResponseEntity.ok(updatedProduct);
     }
     @DeleteMapping(value = "/products/{id}")
-    public String deleteProducts(@PathVariable("id") int id){
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") int id) {
         ProductModel product = productService.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with " + id + " is Not Found!"));
         productService.deleteById(product.getId());
-        return "Group with ID :"+id+" is deleted";
+        return ResponseEntity.ok("Product with ID :" + id + " is deleted");
     }
 
 }
