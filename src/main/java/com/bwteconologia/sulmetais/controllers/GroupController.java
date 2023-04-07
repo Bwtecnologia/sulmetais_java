@@ -3,6 +3,7 @@ package com.bwteconologia.sulmetais.controllers;
 import com.bwteconologia.sulmetais.exceptions.GroupAlreadyExistsException;
 import com.bwteconologia.sulmetais.exceptions.GroupNotFoundException;
 import com.bwteconologia.sulmetais.models.GroupModel;
+import com.bwteconologia.sulmetais.models.ResponseObjectModel;
 import com.bwteconologia.sulmetais.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -53,10 +54,11 @@ public class GroupController {
         return ResponseEntity.ok(updatedGroup);
     }
     @DeleteMapping(value = "/groups/{id}")
-    public ResponseEntity<String> deleteGroup(@PathVariable("id") Long id){
+    public ResponseEntity<ResponseObjectModel> deleteGroup(@PathVariable("id") Long id){
         GroupModel group = groupService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new GroupNotFoundException("Group with " + id + " is Not Found!"));
         groupService.deleteById(Math.toIntExact(group.getId()));
-        return ResponseEntity.ok("Group with ID :"+id+" is deleted");
+        ResponseObjectModel responseObjectModel = new ResponseObjectModel(id, "Group with ID :"+id+" is deleted");
+        return ResponseEntity.ok(responseObjectModel);
     }
 }

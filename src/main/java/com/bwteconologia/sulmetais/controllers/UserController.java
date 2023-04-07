@@ -4,6 +4,7 @@ package com.bwteconologia.sulmetais.controllers;
 import com.bwteconologia.sulmetais.exceptions.UserAlreadyExistsException;
 import com.bwteconologia.sulmetais.exceptions.UserNotFoundException;
 import com.bwteconologia.sulmetais.models.LoginResponse;
+import com.bwteconologia.sulmetais.models.ResponseObjectModel;
 import com.bwteconologia.sulmetais.models.UserModel;
 import com.bwteconologia.sulmetais.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,19 +75,18 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseObjectModel> deleteUser(@PathVariable("id") Long id) {
         UserModel user = userService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new UserNotFoundException("User with " + id + " is Not Found!"));
         userService.deleteById(Math.toIntExact(user.getId()));
 
-        String message = "User with ID " + id + " is deleted";
-        return ResponseEntity.ok(message);
+        ResponseObjectModel responseObjectModel = new ResponseObjectModel(id, "User with ID " + id + " is deleted");
+        return ResponseEntity.ok(responseObjectModel);
     }
     @PostMapping("/users/role")
     public ResponseEntity<Optional<UserModel>> getUsersByRole(@RequestBody Map<String, String> requestBody) {
-        String role = requestBody.get("role");
         int id = Integer.parseInt(requestBody.get("id"));
-        Optional<UserModel> users = userService.findByRoleAndId(role, id);
+        Optional<UserModel> users = userService.findUserRoleByUserId( id);
         return ResponseEntity.ok(users);
     }
 

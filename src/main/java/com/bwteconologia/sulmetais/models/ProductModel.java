@@ -47,6 +47,10 @@ public class ProductModel {
     private UnitModel unit;
 
     @ManyToOne
+    @JoinColumn(name = "product_color_id")
+    private ColorModel color;
+
+    @ManyToOne
     @JoinColumn(name = "group_type_id")
     private GroupModel group;
 

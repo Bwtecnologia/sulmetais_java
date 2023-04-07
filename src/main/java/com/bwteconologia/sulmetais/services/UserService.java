@@ -11,12 +11,10 @@ import java.util.Optional;
 
 @Service
 public class UserService implements IUser {
+    @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
+
     @Override
     public List<UserModel> getAllUsers() {
         return userRepository.findAll();
@@ -33,12 +31,12 @@ public class UserService implements IUser {
     }
 
     @Override
-    public Optional<UserModel> findByRoleAndId(String role, int id){return userRepository.findByRoleAndId(role, id);}
-
-    @Override
     public Optional<UserModel>  findByLoginAndPassword(String login, String password){
         return userRepository.findByLoginAndPassword(login, password);
     }
+
+    @Override
+    public Optional<UserModel> findUserRoleByUserId(int id){return userRepository.findUserRoleById(id);}
 
     @Override
     public UserModel save(UserModel user) {

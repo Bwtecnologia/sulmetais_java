@@ -2,6 +2,7 @@ package com.bwteconologia.sulmetais.controllers;
 
 import com.bwteconologia.sulmetais.exceptions.UnitNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.UserAlreadyExistsException;
+import com.bwteconologia.sulmetais.models.ResponseObjectModel;
 import com.bwteconologia.sulmetais.models.UnitModel;
 import com.bwteconologia.sulmetais.services.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +57,12 @@ public class UnityController {
         return ResponseEntity.ok().body(updatedUnit);
     }
     @DeleteMapping(value = "/units/{id}")
-    public ResponseEntity<String> deleteUnit(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseObjectModel> deleteUnit(@PathVariable("id") Long id) {
         UnitModel unit = unitService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new UnitNotFoundException("Unit with " + id + " is Not Found!"));
         unitService.deleteById(Math.toIntExact(unit.getId()));
-        String message = "Unit with ID: " + id + " has been deleted.";
-        return ResponseEntity.status(HttpStatus.OK).body(message);
+        ResponseObjectModel responseObjectModel = new ResponseObjectModel(id,"Unit with ID :"+id+" is deleted ");
+        return ResponseEntity.ok(responseObjectModel);
     }
 
 }

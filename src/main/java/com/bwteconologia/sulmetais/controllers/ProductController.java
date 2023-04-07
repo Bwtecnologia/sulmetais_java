@@ -1,10 +1,10 @@
 package com.bwteconologia.sulmetais.controllers;
 
 
-import com.bwteconologia.sulmetais.exceptions.ProductAlreadyExistsException;
 import com.bwteconologia.sulmetais.exceptions.ProductNotFoundException;
 import com.bwteconologia.sulmetais.models.GroupModel;
 import com.bwteconologia.sulmetais.models.ProductModel;
+import com.bwteconologia.sulmetais.models.ResponseObjectModel;
 import com.bwteconologia.sulmetais.models.UnitModel;
 import com.bwteconologia.sulmetais.services.GroupService;
 import com.bwteconologia.sulmetais.services.ProductService;
@@ -86,11 +86,12 @@ public class ProductController {
 
 
     @DeleteMapping(value = "/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") int id) {
-        ProductModel product = productService.findById(id)
+    public ResponseEntity<ResponseObjectModel> deleteProduct(@PathVariable("id") Long id) {
+        ProductModel product = productService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new ProductNotFoundException("Product with " + id + " is Not Found!"));
         productService.deleteById(product.getId());
-        return ResponseEntity.ok("Product with ID :" + id + " is deleted");
+        ResponseObjectModel responseObjectModel = new ResponseObjectModel(id, "Product with ID :" + id + " is deleted");
+        return ResponseEntity.ok(responseObjectModel);
     }
 
     @PostMapping(value = "/products")

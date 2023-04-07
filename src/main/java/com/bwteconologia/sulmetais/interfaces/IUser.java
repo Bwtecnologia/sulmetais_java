@@ -11,9 +11,8 @@ public interface IUser {
     List<UserModel> getAllUsers();
     Optional<UserModel> findById(int id);
     Optional<UserModel> findByLogin(String login);
-
+    Optional<UserModel> findUserRoleByUserId(int id);
     Optional<UserModel> findByLoginAndPassword(String login, String password);
-    Optional<UserModel> findByRoleAndId(String role, int id);
     UserModel save(UserModel user);
     void deleteById(int id);
 }
