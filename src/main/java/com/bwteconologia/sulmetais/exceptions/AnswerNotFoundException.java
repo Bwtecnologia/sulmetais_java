@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Getter
 @Setter
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ColorNotFoundException  extends RuntimeException{
+public class AnswerNotFoundException extends RuntimeException{
     private String message;
-    public ColorNotFoundException(String message){
+    public AnswerNotFoundException(String message){
         this.message = message;
     }
 }

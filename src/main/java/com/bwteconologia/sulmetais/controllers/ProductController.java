@@ -1,11 +1,12 @@
 package com.bwteconologia.sulmetais.controllers;
 
 
+import com.bwteconologia.sulmetais.exceptions.ColorNotFoundException;
+import com.bwteconologia.sulmetais.exceptions.GroupNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.ProductNotFoundException;
-import com.bwteconologia.sulmetais.models.GroupModel;
-import com.bwteconologia.sulmetais.models.ProductModel;
-import com.bwteconologia.sulmetais.models.ResponseObjectModel;
-import com.bwteconologia.sulmetais.models.UnitModel;
+import com.bwteconologia.sulmetais.exceptions.UnitNotFoundException;
+import com.bwteconologia.sulmetais.models.*;
+import com.bwteconologia.sulmetais.services.ColorService;
 import com.bwteconologia.sulmetais.services.GroupService;
 import com.bwteconologia.sulmetais.services.ProductService;
 import com.bwteconologia.sulmetais.services.UnitService;
@@ -29,6 +30,9 @@ public class ProductController {
 
     @Autowired
     private GroupService groupService;
+
+    @Autowired
+    private ColorService colorService;
 
     @GetMapping(value = "/products")
     public ResponseEntity<List<ProductModel>> getAllProducts() {
@@ -95,19 +99,28 @@ public class ProductController {
     }
 
     @PostMapping(value = "/products")
-    public ResponseEntity<ProductModel> createProductWithUnitAndGroup(@RequestBody ProductModel product, @RequestParam Long  unitId, @RequestParam Long groupId) {
-        Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(unitId));
-        Optional<GroupModel> groupOptional = groupService.findById(Math.toIntExact(groupId));
+    public ResponseEntity<ProductModel> createProductWithUnitAndGroup(@RequestBody ProductModel product) {
+        Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(product.getUnit().getId()));
+        Optional<GroupModel> groupOptional = groupService.findById(Math.toIntExact(product.getGroup().getId()));
+        Optional<ColorModel> colorOptional = colorService.findById(Math.toIntExact(product.getColor().getId()));
 
-        if (!unitOptional.isPresent() || !groupOptional.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unit not found");
+        if (!unitOptional.isPresent()) {
+            throw new UnitNotFoundException("Unit not found");
+        }
+        if (!groupOptional.isPresent()) {
+            throw new GroupNotFoundException("Group not found");
+        }
+        if (!colorOptional.isPresent()) {
+            throw new ColorNotFoundException("Color not found");
         }
 
         UnitModel unit = unitOptional.get();
         GroupModel group = groupOptional.get();
+        ColorModel color = colorOptional.get();
 
         product.setUnit(unit);
         product.setGroup(group);
+        product.setColor(color);
 
         ProductModel savedProduct = productService.save(product);
 

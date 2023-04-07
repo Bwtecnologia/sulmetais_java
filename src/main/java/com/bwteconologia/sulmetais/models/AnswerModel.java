@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -18,24 +17,26 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "colors")
-public class ColorModel implements Serializable {
+@Table(name = "answers")
+public class AnswerModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "color_type", nullable = false)
-    private String type;
+    @Column(name = "answer_formula", nullable = false)
+    private String formula;
 
-    @Column(name = "color_description", nullable = false)
+    @Column(name = "answer_description", nullable = false)
     private String description;
 
-    @Column(name = "color_value", nullable = false)
+    @Column(name = "answer_value", nullable = false)
     private float value;
 
+    @ManyToOne
+    @JoinColumn(name = "question_id")
     @JsonIgnore
-    @OneToMany(mappedBy = "color")
-    private List<ProductModel> products;
+    private QuestionModel question;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
@@ -53,5 +54,4 @@ public class ColorModel implements Serializable {
     protected void onUpdate() {
         updatedAt = new Date();
     }
-
 }
