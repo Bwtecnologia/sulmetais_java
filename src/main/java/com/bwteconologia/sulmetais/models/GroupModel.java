@@ -30,6 +30,7 @@ public class GroupModel {
     @JsonIgnore
     @OneToMany(mappedBy = "group")
     private List<ProductModel> products;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;

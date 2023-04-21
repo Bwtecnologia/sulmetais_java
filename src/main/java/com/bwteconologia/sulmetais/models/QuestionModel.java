@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain=true)
+@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -37,6 +37,11 @@ public class QuestionModel {
     @OneToMany(mappedBy = "question")
     @JsonIgnore
     private List<AnswerModel> answers;
+
+    @ManyToOne
+    @JoinColumn(name = "quiz_id")
+    @JsonIgnore
+    private QuizModel quiz;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")

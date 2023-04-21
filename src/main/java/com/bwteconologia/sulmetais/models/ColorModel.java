@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.awt.image.TileObserver;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ public class ColorModel implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "color")
     private List<ProductModel> products;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
