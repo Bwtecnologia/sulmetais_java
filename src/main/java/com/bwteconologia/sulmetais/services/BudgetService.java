@@ -4,10 +4,11 @@ import com.bwteconologia.sulmetais.interfaces.IBudget;
 import com.bwteconologia.sulmetais.models.BudgetModel;
 import com.bwteconologia.sulmetais.repositories.BudgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
+@Service
 public class BudgetService implements IBudget {
 
     @Autowired

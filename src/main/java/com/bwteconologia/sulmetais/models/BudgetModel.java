@@ -39,9 +39,6 @@ public class BudgetModel {
     @Column(name = "value")
     private int  value;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "budget")
-    private List<QuizModel> quiz;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")

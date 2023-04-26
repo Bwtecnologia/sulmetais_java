@@ -39,9 +39,6 @@ public class QuizModel {
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<AnswerModel> answers;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "quiz")
-    private List<BudgetModel> budget;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
