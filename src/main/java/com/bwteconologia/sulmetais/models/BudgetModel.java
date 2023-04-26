@@ -17,35 +17,31 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "questionnaires")
-public class QuizModel {
+@Table(name = "budgets")
+public class BudgetModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "item")
+    private String item;
 
-    @Column(name = "formula")
-    private String formula;
-
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<QuestionModel> questions;
-
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<AnswerModel> answers;
-
-    @JsonIgnore
-    @OneToOne(mappedBy = "quiz")
-    private List<BudgetModel> budget;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
+    @Column(name = "description")
     private Date createdAt;
+
+    @Column(name = "unity")
+    private String unity;
+
+    @Column(name = "quantity")
+    private int  quantity;
+
+    @Column(name = "value")
+    private int  value;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "budget")
+    private List<QuizModel> quiz;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
