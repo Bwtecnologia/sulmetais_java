@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "questionnaires")
+@Table(name = "quiz")
 public class QuizModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +30,12 @@ public class QuizModel {
     private String formula;
 
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<QuestionModel> questions;
 
 
-    @JsonIgnore
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<AnswerModel> answers;
 
