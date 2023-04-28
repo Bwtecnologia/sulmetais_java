@@ -1,13 +1,11 @@
 package com.bwteconologia.sulmetais.controllers;
 
 import com.bwteconologia.sulmetais.exceptions.AnswerNotFoundException;
+import com.bwteconologia.sulmetais.exceptions.ProductNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.QuestionNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.QuizNotFoundException;
-import com.bwteconologia.sulmetais.models.AnswerModel;
-import com.bwteconologia.sulmetais.models.QuestionModel;
-import com.bwteconologia.sulmetais.models.QuizModel;
-import com.bwteconologia.sulmetais.models.ResponseObjectModel;
-import com.bwteconologia.sulmetais.services.AnswerService;
+import com.bwteconologia.sulmetais.models.*;
+import com.bwteconologia.sulmetais.services.ProductService;
 import com.bwteconologia.sulmetais.services.QuestionService;
 import com.bwteconologia.sulmetais.services.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +22,12 @@ public class QuizController {
     @Autowired
     QuizService quizService;
 
+
+    @Autowired
+    ProductService productService;
+
     @Autowired
     QuestionService questionService;
-
-    @Autowired
-    AnswerService answerService;
-
 
 
     @GetMapping(value = "/quiz")
@@ -40,25 +38,29 @@ public class QuizController {
 
     @PostMapping(value = "/quiz")
     public ResponseEntity<QuizModel> createQuestionnaire(@RequestBody QuizModel quiz) {
+
+        int productId = quiz.getProduct().getId();
         Long questionId = quiz.getQuestions().get(0).getId();
-        Long answerId = quiz.getAnswers().get(0).getId();
 
+        Optional<ProductModel> productOptional = productService.findById(Math.toIntExact(productId));
         Optional<QuestionModel> questionOptional = questionService.findById(Math.toIntExact(questionId));
-        Optional<AnswerModel> answerOptional = answerService.findById(Math.toIntExact(answerId));
 
+        if(!productOptional.isPresent()){
+            throw new ProductNotFoundException("Product not found");
+        }
         if(!questionOptional.isPresent()){
             throw new QuizNotFoundException("Question not found");
         }
-        if(!answerOptional.isPresent()){
-            throw new AnswerNotFoundException("Answer not found");
-        }
+
+        ProductModel product = productOptional.get();
         QuestionModel question = questionOptional.get();
-        AnswerModel answer = answerOptional.get();
+
 
         quiz.getQuestions().clear();
-        quiz.getAnswers().clear();
+
+        quiz.getProduct();
         quiz.getQuestions().add(question);
-        quiz.getAnswers().add(answer);
+
 
         QuizModel newQuiz = quizService.save(quiz);
 
@@ -82,8 +84,9 @@ public class QuizController {
 
         QuizModel existingQuiz = quizOptional.get();
 
+        existingQuiz.setProduct(quiz.getProduct());
         existingQuiz.setQuestions(quiz.getQuestions());
-        existingQuiz.setAnswers(quiz.getAnswers());
+
 
         QuizModel updatedQuiz = quizService.save(existingQuiz);
 

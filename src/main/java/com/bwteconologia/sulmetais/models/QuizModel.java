@@ -23,21 +23,11 @@ public class QuizModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    @Column(name = "formula")
-    private String formula;
-
-
+    @OneToOne
+    private ProductModel product;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<QuestionModel> questions;
-
-
-
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<AnswerModel> answers;
 
 
     @Temporal(TemporalType.TIMESTAMP)
