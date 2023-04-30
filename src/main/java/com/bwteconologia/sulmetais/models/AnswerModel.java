@@ -33,15 +33,14 @@ public class AnswerModel {
     @Column(name = "answer_value", nullable = false)
     private float value;
 
+    @OneToOne
+    @JoinColumn(name="product_id")
+    private ProductModel product;
+
     @ManyToOne
     @JoinColumn(name = "question_id")
     @JsonIgnore
     private QuestionModel question;
-
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    @JsonIgnore
-    private QuizModel quiz;
 
 
     @Temporal(TemporalType.TIMESTAMP)

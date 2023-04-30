@@ -1,13 +1,12 @@
 package com.bwteconologia.sulmetais.controllers;
 
-import com.bwteconologia.sulmetais.exceptions.AnswerAlreadyExistsException;
-import com.bwteconologia.sulmetais.exceptions.AnswerNotFoundException;
-import com.bwteconologia.sulmetais.exceptions.GroupNotFoundException;
-import com.bwteconologia.sulmetais.exceptions.QuestionNotFoundException;
+import com.bwteconologia.sulmetais.exceptions.*;
 import com.bwteconologia.sulmetais.models.AnswerModel;
+import com.bwteconologia.sulmetais.models.ProductModel;
 import com.bwteconologia.sulmetais.models.QuestionModel;
 import com.bwteconologia.sulmetais.models.ResponseObjectModel;
 import com.bwteconologia.sulmetais.services.AnswerService;
+import com.bwteconologia.sulmetais.services.ProductService;
 import com.bwteconologia.sulmetais.services.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,9 @@ public class AnswerController {
     AnswerService answerService;
     @Autowired
     QuestionService questionService;
+
+    @Autowired
+    ProductService productService;
 
 
     @GetMapping(value = "/answers")
@@ -59,6 +61,7 @@ public class AnswerController {
         answer.setDescription(answersUpdate.getDescription());
         answer.setValue(answersUpdate.getValue());
         answer.setUpdatedAt(new Date());
+        answer.setProduct(answersUpdate.getProduct());
 
         AnswerModel updatedAnswer = answerService.save(answer);
         return ResponseEntity.ok(updatedAnswer);
