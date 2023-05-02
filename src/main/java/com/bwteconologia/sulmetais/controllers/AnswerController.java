@@ -44,11 +44,25 @@ public class AnswerController {
     @PostMapping(value = "/answers")
     public ResponseEntity<AnswerModel> addAnswer(@RequestBody AnswerModel answer, @RequestParam int questionId) {
         Optional<QuestionModel> optionalQuestion = questionService.findById(Math.toIntExact(questionId));
+        Optional<ProductModel> optionalProduct = productService.findById(Math.toIntExact(answer.getProduct().getId()));
+
         if (!optionalQuestion.isPresent()) {
             throw new QuestionNotFoundException("Question not found");
         }
         QuestionModel question = optionalQuestion.get();
+        answer.setProduct(null);
+        if(optionalProduct.isPresent()){
+            ProductModel product=  optionalProduct.get();
+            answer.setProduct(product);
+        }
+
+
         answer.setQuestion(question);
+
+
+
+
+
         AnswerModel savedAnswers = answerService.save(answer);
         return ResponseEntity.ok(savedAnswers);
     }
