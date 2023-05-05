@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "groups")
+@Table(name = "_groups")
 public class GroupModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
