@@ -54,25 +54,47 @@ public class ProductController {
     }
 
     @PutMapping(value = "/products/{id}")
-    public ResponseEntity<ProductModel> updateProductWithUnitAndGroup(@PathVariable Long id, @RequestBody ProductModel product, @RequestParam Long unitId, @RequestParam Long groupId) {
+    public ResponseEntity<ProductModel> updateProductWithUnitAndGroup(@PathVariable Long id, @RequestBody ProductModel product,
+                                                                      @RequestParam Long unitId, @RequestParam(required = false) Long groupId,
+                                                                      @RequestParam(required = false) Long colorId) {
         Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(unitId));
-        Optional<GroupModel> groupOptional = groupService.findById(Math.toIntExact(groupId));
 
-        if (!unitOptional.isPresent() || !groupOptional.isPresent()) {
-            throw new ProductNotFoundException("Unit or Group not found");
+
+
+        if (!unitOptional.isPresent()) {
+            throw new ProductNotFoundException("Unit not found");
         }
-
-        UnitModel unit = unitOptional.get();
-        GroupModel group = groupOptional.get();
 
         Optional<ProductModel> productOptional = productService.findById(Math.toIntExact(id));
 
         if (!productOptional.isPresent()) {
             throw new ProductNotFoundException("Product not found");
         }
+
         ProductModel existingProduct = productOptional.get();
+
+        if(colorId != null) {
+            Optional<ColorModel> colorModelOptional = colorService.findById(Math.toIntExact(colorId));
+            if (!colorModelOptional.isPresent()) {
+                throw  new GroupNotFoundException("Group not found for this product");
+            }
+            ColorModel color = colorModelOptional.get();
+            existingProduct.setColor(color);
+        }
+
+        //se o group id for existente ele tenta
+        if(groupId != null) {
+            Optional<GroupModel> groupOptional = groupService.findById(Math.toIntExact(groupId));
+            if (!groupOptional.isPresent()) {
+                throw  new GroupNotFoundException("Group not found for this product");
+            }
+                GroupModel group = groupOptional.get();
+                existingProduct.setGroup(group);
+
+        }
+        UnitModel unit = unitOptional.get();
+
         existingProduct.setUnit(unit);
-        existingProduct.setGroup(group);
         existingProduct.setProductName(product.getProductName());
         existingProduct.setProductBuy(product.getProductBuy());
         existingProduct.setProductFabricated(product.getProductFabricated());
@@ -100,27 +122,38 @@ public class ProductController {
 
     @PostMapping(value = "/products")
     public ResponseEntity<ProductModel> createProductWithUnitAndGroup(@RequestBody ProductModel product) {
-        Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(product.getUnit().getId()));
-        Optional<GroupModel> groupOptional = groupService.findById(Math.toIntExact(product.getGroup().getId()));
-        Optional<ColorModel> colorOptional = colorService.findById(Math.toIntExact(product.getColor().getId()));
+        Optional<UnitModel> unitOptional = Optional.ofNullable(product.getUnit());
+        Optional<GroupModel> groupOptional = Optional.ofNullable(product.getGroup());
+        Optional<ColorModel> colorOptional = Optional.ofNullable(product.getColor());
 
-        if (!unitOptional.isPresent()) {
+        //gives error if doest exists unit
+        if(unitOptional.isEmpty()){
+
             throw new UnitNotFoundException("Unit not found");
         }
-        if (!groupOptional.isPresent()) {
-            throw new GroupNotFoundException("Group not found");
-        }
-        if (!colorOptional.isPresent()) {
-            throw new ColorNotFoundException("Color not found");
+        else {
+            UnitModel unit = unitOptional.get();
+            product.setUnit(unit);
+            unitService.findById(Math.toIntExact(unit.getId()));
         }
 
-        UnitModel unit = unitOptional.get();
-        GroupModel group = groupOptional.get();
-        ColorModel color = colorOptional.get();
+        //group and color can be nullable
+        if (groupOptional.isPresent()) {
 
-        product.setUnit(unit);
-        product.setGroup(group);
-        product.setColor(color);
+            GroupModel group = groupOptional.get();
+            product.setGroup(group);
+            groupService.findById(Math.toIntExact(group.getId()));
+        }
+        if (colorOptional.isPresent()) {
+            ColorModel color = colorOptional.get();
+            product.setColor(color);
+            colorService.findById(Math.toIntExact(Math.toIntExact(color.getId())));
+        }
+
+
+
+
+
 
         ProductModel savedProduct = productService.save(product);
 

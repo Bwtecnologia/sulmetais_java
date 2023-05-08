@@ -43,7 +43,7 @@ public class ProductModel {
     private Float productPrice;
 
     @ManyToOne
-    @JoinColumn(name = "product_unit_id")
+    @JoinColumn(name = "product_unit_id", nullable = false)
     private UnitModel unit;
 
     @ManyToOne
