@@ -23,8 +23,13 @@ public class QuizModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private ProductModel product;
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "quiz_product",
+            joinColumns = { @JoinColumn(name = "quiz_id") },
+            inverseJoinColumns = { @JoinColumn(name = "product_id") }
+    )
+    private List<ProductModel> product;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<QuestionModel> questions;

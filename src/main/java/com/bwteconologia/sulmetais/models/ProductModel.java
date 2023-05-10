@@ -63,6 +63,10 @@ public class ProductModel {
     )
     private Set<GroupColorModel> groupColors = new HashSet<>();
 
+    @ManyToMany(mappedBy = "product")
+    private Set<QuizModel> quiz;
+
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;

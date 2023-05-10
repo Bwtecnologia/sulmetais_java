@@ -39,7 +39,7 @@ public class QuizController {
     @PostMapping(value = "/quiz")
     public ResponseEntity<QuizModel> createQuestionnaire(@RequestBody QuizModel quiz) {
 
-        int productId = quiz.getProduct().getId();
+        int productId = quiz.getProduct().get(0).getId();
         Long questionId = quiz.getQuestions().get(0).getId();
 
         Optional<ProductModel> productOptional = productService.findById(Math.toIntExact(productId));
