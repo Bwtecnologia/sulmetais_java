@@ -26,24 +26,24 @@ public class GroupColorController {
     ColorService colorService;
 
     @GetMapping(value = "/groupcolors")
-    public List<GroupColorModel>getAllGroupColors(){
+    public List<GroupColorModel> getAllGroupColors() {
 
         List<GroupColorModel> groupColorModelList = groupColorService.getAllGroupColors();
         return groupColorModelList;
     }
 
     @PostMapping(value = "/groupcolors")
-    public GroupColorModel insertGroupModel(@RequestBody GroupColorModel groupColorModel){
+    public GroupColorModel insertGroupModel(@RequestBody GroupColorModel groupColorModel) {
 
         double maxPrice = 0;
 
         List<ColorModel> colorModelList = new ArrayList<ColorModel>();
         //verify if color exist in colors table and calc maxPrice of Group
-        for(var i = 0; i < groupColorModel.getColors().size(); i++) {
+        for (var i = 0; i < groupColorModel.getColors().size(); i++) {
             Optional<ColorModel> colorModelOptional =
                     colorService.findById(Math.toIntExact(groupColorModel.getColors().get(i).getId()));
 
-            if(colorModelOptional.isEmpty()) throw new ColorNotFoundException("Color not found");
+            if (colorModelOptional.isEmpty()) throw new ColorNotFoundException("Color not found");
             //groupColorModel.getColors().set(i, colorModelOptional.get()).;
 
             colorModelList.add(colorModelOptional.get());
@@ -53,7 +53,7 @@ public class GroupColorController {
 //            String description = groupColorModel.getColors().get(i).getDescription();
 //            String createdDate = groupColorModel.get
 
-            if(maxPrice < value) maxPrice = value;
+            if (maxPrice < value) maxPrice = value;
 
         }
 
@@ -61,6 +61,14 @@ public class GroupColorController {
         groupColorModel.setHighestValue(maxPrice);
 
         return groupColorService.save(groupColorModel);
+    }
+
+    @GetMapping(value = "/groupcolors/{id}")
+    public GroupColorModel findById(@PathVariable("id") Long id){
+        Optional<GroupColorModel> groupColorModelOptional = groupColorService.findById(id);
+        if(groupColorModelOptional.isEmpty()) throw new GroupColorNotExistsException("Group id:" + id + " not exist");
+
+        return groupColorModelOptional.get();
     }
 
     @PutMapping(value = "/groupcolors/{id}")
@@ -71,11 +79,11 @@ public class GroupColorController {
         double maxPrice = 0;
         List<ColorModel> colorModelList = new ArrayList<ColorModel>();
         //verify if color exist in colors table and calc maxPrice of Group
-        for(var i = 0; i < groupColorModel.getColors().size(); i++) {
+        for (var i = 0; i < groupColorModel.getColors().size(); i++) {
             Optional<ColorModel> colorModelOptional =
                     colorService.findById(Math.toIntExact(groupColorModel.getColors().get(i).getId()));
 
-            if(colorModelOptional.isEmpty()) throw new ColorNotFoundException("Color not found");
+            if (colorModelOptional.isEmpty()) throw new ColorNotFoundException("Color not found");
             //groupColorModel.getColors().set(i, colorModelOptional.get()).;
 
             colorModelList.add(colorModelOptional.get());
@@ -85,12 +93,13 @@ public class GroupColorController {
 //            String description = groupColorModel.getColors().get(i).getDescription();
 //            String createdDate = groupColorModel.get
 
-            if(maxPrice < value) maxPrice = value;
+            if (maxPrice < value) maxPrice = value;
 
         }
 
         Optional<GroupColorModel> groupColorModelOptional = groupColorService.findById(id);
-        if(!groupColorModelOptional.isPresent()) throw new GroupColorNotExistsException();
+        if (!groupColorModelOptional.isPresent())
+            throw new GroupColorNotExistsException("Group color " + id + " not found");
 
         groupColorModel.setHighestValue(maxPrice);
         groupColorModel.setUpdatedAt(new Date());
@@ -100,10 +109,11 @@ public class GroupColorController {
     }
 
     @DeleteMapping(value = "/groupcolors/{id}")
-    public void deleteGroupModel(@PathVariable("id") Long id){
+    public void deleteGroupModel(@PathVariable("id") Long id) {
 
         Optional<GroupColorModel> groupColorModelOptional = groupColorService.findById(id);
-        if(groupColorModelOptional.isEmpty()) throw new GroupColorNotExistsException();
+        if (groupColorModelOptional.isEmpty())
+            throw new GroupColorNotExistsException("Group color " + id + " not found");
 
         groupColorService.deleteById(Math.toIntExact(id));
     }

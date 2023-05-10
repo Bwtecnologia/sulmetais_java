@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -25,6 +27,9 @@ public class GroupColorModel implements Serializable {
 
     @Column(name = "highest_value")
     private double highestValue;
+
+    @ManyToMany(mappedBy = "groupColors")
+    private Set<ProductModel> product = new HashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

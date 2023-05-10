@@ -1,8 +1,8 @@
 package com.bwteconologia.sulmetais.services;
 
-import com.bwteconologia.sulmetais.interfaces.IGroup;
-import com.bwteconologia.sulmetais.models.GroupModel;
-import com.bwteconologia.sulmetais.repositories.GroupRepository;
+import com.bwteconologia.sulmetais.interfaces.IProductGroup;
+import com.bwteconologia.sulmetais.models.ProductGroupModel;
+import com.bwteconologia.sulmetais.repositories.ProductGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,31 +10,31 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class GroupService implements IGroup {
-    GroupRepository groupRepository;
+public class GroupService implements IProductGroup {
+    ProductGroupRepository groupRepository;
 
     @Autowired
-    public GroupService(GroupRepository groupRepository){
+    public GroupService(ProductGroupRepository groupRepository){
         this.groupRepository = groupRepository;
 
     }
     @Override
-    public List<GroupModel> getAllGroups() {
+    public List<ProductGroupModel> getAllGroups() {
         return groupRepository.findAll();
     }
 
     @Override
-    public Optional<GroupModel> findById(int id) {
+    public Optional<ProductGroupModel> findById(int id) {
         return groupRepository.findById(id);
     }
 
     @Override
-    public GroupModel save(GroupModel group) {
+    public ProductGroupModel save(ProductGroupModel group) {
         return groupRepository.save(group);
     }
 
     @Override
-    public Optional<GroupModel> findByGroupDescription(String groupDescription) {
+    public Optional<ProductGroupModel> findByGroupDescription(String groupDescription) {
         return groupRepository.findByGroupDescription(groupDescription);
     }
 
