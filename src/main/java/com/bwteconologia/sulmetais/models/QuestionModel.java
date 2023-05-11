@@ -38,10 +38,9 @@ public class QuestionModel {
     @JsonIgnore
     private List<AnswerModel> answers;
 
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
+    @ManyToMany(mappedBy = "questions")
     @JsonIgnore
-    private QuizModel quiz;
+    private List<QuizModel> quiz;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")

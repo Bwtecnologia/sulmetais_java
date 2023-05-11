@@ -4,6 +4,7 @@ import com.bwteconologia.sulmetais.exceptions.AnswerNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.ProductNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.QuestionNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.QuizNotFoundException;
+import com.bwteconologia.sulmetais.exceptions.group_color.GroupColorNotExistsException;
 import com.bwteconologia.sulmetais.models.*;
 import com.bwteconologia.sulmetais.services.ProductService;
 import com.bwteconologia.sulmetais.services.QuestionService;
@@ -13,8 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -39,32 +42,37 @@ public class QuizController {
     @PostMapping(value = "/quiz")
     public ResponseEntity<QuizModel> createQuestionnaire(@RequestBody QuizModel quiz) {
 
-        int productId = quiz.getProduct().get(0).getId();
-        Long questionId = quiz.getQuestions().get(0).getId();
+        int productId = quiz.getProduct().getId();
+
 
         Optional<ProductModel> productOptional = productService.findById(Math.toIntExact(productId));
-        Optional<QuestionModel> questionOptional = questionService.findById(Math.toIntExact(questionId));
+
 
         if(!productOptional.isPresent()){
             throw new ProductNotFoundException("Product not found");
         }
-        if(!questionOptional.isPresent()){
-            throw new QuizNotFoundException("Question not found");
+
+        Set<QuestionModel> questionModelList = new HashSet<>();
+
+        for(QuestionModel questionModel : quiz.getQuestions()) {
+            Optional<QuestionModel> questionModelOptional =
+            questionService.findById(Math.toIntExact(questionModel.getId()));
+
+            if(questionModelOptional.isEmpty()) throw new QuestionNotFoundException("Question id:" + questionModel.getId() +" not found");
+
+            questionModelList.add(questionModelOptional.get());
         }
 
+        quiz.setQuestions(questionModelList);
+
         ProductModel product = productOptional.get();
-        QuestionModel question = questionOptional.get();
+
+        quiz.setProduct(product);
 
 
-        quiz.getQuestions().clear();
+        quizService.save(quiz);
 
-        quiz.getProduct();
-        quiz.getQuestions().add(question);
-
-
-        QuizModel newQuiz = quizService.save(quiz);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(newQuiz);
+        return ResponseEntity.status(HttpStatus.CREATED).body(quiz);
     }
 
     @GetMapping(value = "/quiz/{id}")

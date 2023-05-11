@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,20 +20,21 @@ import java.util.List;
 @Entity
 @Table(name = "quiz")
 public class QuizModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    private ProductModel product;
+
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
-            name = "quiz_product",
+            name = "quiz_question",
             joinColumns = { @JoinColumn(name = "quiz_id") },
-            inverseJoinColumns = { @JoinColumn(name = "product_id") }
+            inverseJoinColumns = { @JoinColumn(name = "question_id") }
     )
-    private List<ProductModel> product;
-
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<QuestionModel> questions;
+    private Set<QuestionModel> questions;
 
 
     @Temporal(TemporalType.TIMESTAMP)
