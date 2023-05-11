@@ -74,7 +74,7 @@ public class GroupColorController {
     @PutMapping(value = "/groupcolors/{id}")
     public GroupColorModel updateGroupModel(
             @RequestBody GroupColorModel groupColorModel,
-            @PathVariable("id") Long id) throws Throwable {
+            @PathVariable("id") Long id) {
 
         double maxPrice = 0;
         List<ColorModel> colorModelList = new ArrayList<ColorModel>();
@@ -98,9 +98,10 @@ public class GroupColorController {
         }
 
         Optional<GroupColorModel> groupColorModelOptional = groupColorService.findById(id);
-        if (!groupColorModelOptional.isPresent())
+        if (groupColorModelOptional.isEmpty())
             throw new GroupColorNotExistsException("Group color " + id + " not found");
 
+        groupColorModel.setId(id);
         groupColorModel.setHighestValue(maxPrice);
         groupColorModel.setUpdatedAt(new Date());
         groupColorModel.setColors(colorModelList);
