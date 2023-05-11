@@ -53,8 +53,7 @@ public class ProductController {
 
     @PutMapping(value = "/products/{id}")
     public ResponseEntity<ProductModel> updateProductWithUnitAndGroup(@PathVariable Long id, @RequestBody ProductModel product,
-                                                                      @RequestParam Long unitId, @RequestParam(required = false) Long groupId,
-                                                                      @RequestParam(required = false) Long colorId) {
+                                                                      @RequestParam Long unitId, @RequestParam(required = false) Long groupId) {
         Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(unitId));
 
         Set<GroupColorModel> groupColorModelList = new HashSet<>();
@@ -80,15 +79,6 @@ public class ProductController {
         }
 
         ProductModel existingProduct = productOptional.get();
-
-        if(colorId != null) {
-            Optional<ColorModel> colorModelOptional = colorService.findById(Math.toIntExact(colorId));
-            if (!colorModelOptional.isPresent()) {
-                throw  new GroupNotFoundException("Group not found for this product");
-            }
-            ColorModel color = colorModelOptional.get();
-            existingProduct.setColor(color);
-        }
 
         //se o group id for existente ele tenta
         if(groupId != null) {

@@ -109,12 +109,14 @@ public class GroupColorController {
     }
 
     @DeleteMapping(value = "/groupcolors/{id}")
-    public void deleteGroupModel(@PathVariable("id") Long id) {
+    public String deleteGroupModel(@PathVariable("id") Long id) {
 
         Optional<GroupColorModel> groupColorModelOptional = groupColorService.findById(id);
         if (groupColorModelOptional.isEmpty())
             throw new GroupColorNotExistsException("Group color " + id + " not found");
 
         groupColorService.deleteById(Math.toIntExact(id));
+
+        return "Group with id: " + id +" has been deleted!";
     }
 }

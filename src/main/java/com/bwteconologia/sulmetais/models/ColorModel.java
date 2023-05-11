@@ -25,9 +25,6 @@ public class ColorModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "color_type", nullable = false)
-    private String type;
-
     @Column(name = "color_description", nullable = false)
     private String description;
 
