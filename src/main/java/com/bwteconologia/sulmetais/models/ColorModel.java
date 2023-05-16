@@ -31,10 +31,6 @@ public class ColorModel implements Serializable {
     @Column(name = "color_value", nullable = false)
     private float value;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "color")
-    private List<ProductModel> products;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;

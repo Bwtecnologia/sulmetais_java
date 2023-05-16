@@ -87,7 +87,7 @@ public class ProductController {
                 throw  new GroupNotFoundException("Group not found for this product");
             }
                 ProductGroupModel group = groupOptional.get();
-                existingProduct.setGroup(group);
+                existingProduct.setProductGroup(group);
 
         }
         UnitModel unit = unitOptional.get();
@@ -122,9 +122,7 @@ public class ProductController {
     @PostMapping(value = "/products")
     public ResponseEntity<ProductModel> createProductWithUnitAndGroup(@RequestBody ProductModel product) {
         Optional<UnitModel> unitOptional = Optional.ofNullable(product.getUnit());
-        Optional<ProductGroupModel> groupOptional = Optional.ofNullable(product.getGroup());
-        Optional<ColorModel> colorOptional = Optional.ofNullable(product.getColor());
-
+        Optional<ProductGroupModel> groupOptional = Optional.ofNullable(product.getProductGroup());
 
         Set<GroupColorModel> groupColorModelList = new HashSet<>();
         //verify if groupcolor exist in groupcolors table
@@ -155,13 +153,8 @@ public class ProductController {
         if (groupOptional.isPresent()) {
 
             ProductGroupModel group = groupOptional.get();
-            product.setGroup(group);
+            product.setProductGroup(group);
             groupService.findById(Math.toIntExact(group.getId()));
-        }
-        if (colorOptional.isPresent()) {
-            ColorModel color = colorOptional.get();
-            product.setColor(color);
-            colorService.findById(Math.toIntExact(Math.toIntExact(color.getId())));
         }
 
 
