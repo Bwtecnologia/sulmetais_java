@@ -36,7 +36,7 @@ public class QuestionModel {
 
     @OneToMany(mappedBy = "question")
     @JsonIgnore
-    private List<AnswerModel > answers;
+    private List<AnswerModel> answers;
 
     @ManyToMany(mappedBy = "questions")
     @JsonIgnore

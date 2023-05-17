@@ -50,18 +50,18 @@ public class MaterialListController {
     @PostMapping("/material")
     MaterialListModel save(
             @RequestBody MaterialListModel material,
-            @RequestParam Long quizId,
-//            @RequestParam Long productId,
+//            @RequestParam Long quizId,
+            @RequestParam Long productId,
             @RequestParam(required = false) Long itemSubId) {
 
-        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
-        if(quizModelOptional.isEmpty()) throw new QuizNotFoundException("Quiz doesnt exists!");
-        material.setQuiz(quizModelOptional.get());
+//        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+//        if(quizModelOptional.isEmpty()) throw new QuizNotFoundException("Quiz doesnt exists!");
+//        material.setQuiz(quizModelOptional.get());
 
 
-//        Optional<ProductModel> productModelOptional = productService.findById(Math.toIntExact(productId));
-//        if(productModelOptional.isEmpty()) throw new ProductNotFoundException("Product doesnt exists!");
-//        material.setProduct(productModelOptional.get());
+        Optional<ProductModel> productModelOptional = productService.findById(Math.toIntExact(productId));
+        if(productModelOptional.isEmpty()) throw new ProductNotFoundException("Product doesnt exists!");
+        material.setProduct(productModelOptional.get());
 
 
         if (itemSubId!=null){
@@ -84,21 +84,20 @@ public class MaterialListController {
     @PutMapping("/material/{id}")
     MaterialListModel update(@RequestBody MaterialListModel material,
                              @PathVariable Long id,
-                             @RequestParam Long quizId,
-//                             @RequestParam Long productId,
+//                             @RequestParam Long quizId,
+                             @RequestParam Long productId,
                              @RequestParam(required = false) Long itemSubId){
 
         Optional<MaterialListModel> materialListModelOptional = materialListService.findById(id);
         if(materialListModelOptional.isEmpty()) throw new MaterialListNotFoundException("Material List with id: " + id + " doesnt exist!");
 
-        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
-        if(quizModelOptional.isEmpty()) throw new QuizNotFoundException("Quiz doesnt exists!");
-        material.setQuiz(quizModelOptional.get());
+//        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+//        if(quizModelOptional.isEmpty()) throw new QuizNotFoundException("Quiz doesnt exists!");
+//        material.setQuiz(quizModelOptional.get());
 
-
-//        Optional<ProductModel> productModelOptional = productService.findById(Math.toIntExact(productId));
-//        if(productModelOptional.isEmpty()) throw new ProductNotFoundException("Product doesnt exists!");
-//        material.setProduct(productModelOptional.get());
+        Optional<ProductModel> productModelOptional = productService.findById(Math.toIntExact(productId));
+        if(productModelOptional.isEmpty()) throw new ProductNotFoundException("Product doesnt exists!");
+        material.setProduct(productModelOptional.get());
 
 
         if (itemSubId!=null){

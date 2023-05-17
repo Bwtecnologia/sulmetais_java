@@ -25,9 +25,9 @@ public class QuizModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @OneToOne
-//    @JoinColumn
-//    MaterialListModel material;
+
+    @OneToMany(mappedBy = "quiz")
+    List<MaterialListModel> material;
 
     @OneToOne
     private ProductModel product;

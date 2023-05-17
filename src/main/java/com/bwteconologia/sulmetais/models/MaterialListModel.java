@@ -13,9 +13,17 @@ public class MaterialListModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    @JoinColumn
+    ProductModel product;
+
+//    @ManyToOne
+//    @JoinColumn(nullable = false)
+//    private QuizModel quiz;
+
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private QuizModel quiz;
+    @JoinColumn
+    QuizModel quiz;
 
     @OneToOne
     @JoinColumn
