@@ -1,5 +1,6 @@
 package com.bwteconologia.sulmetais.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,14 +17,6 @@ public class MaterialListModel {
     @OneToOne
     @JoinColumn
     ProductModel product;
-
-//    @ManyToOne
-//    @JoinColumn(nullable = false)
-//    private QuizModel quiz;
-
-    @ManyToOne
-    @JoinColumn
-    QuizModel quiz;
 
     @OneToOne
     @JoinColumn

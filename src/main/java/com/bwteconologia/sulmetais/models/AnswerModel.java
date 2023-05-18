@@ -39,9 +39,7 @@ public class AnswerModel {
 
     @ManyToOne
     @JoinColumn(name = "question_id")
-    @JsonIgnore
     private QuestionModel question;
-
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

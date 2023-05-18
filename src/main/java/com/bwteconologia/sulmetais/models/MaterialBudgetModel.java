@@ -36,7 +36,7 @@ public class MaterialBudgetModel {
     @JoinColumn
     private BudgetsModel budget;
 
-    MaterialBudgetModel(List<AnswerQuizModel> answers, MaterialListModel materialList) {
+    public MaterialBudgetModel(List<AnswerQuizModel> answers, MaterialListModel materialList) {
 
         this.materialName = materialList.getProduct().getProductName();
         this.unity = materialList.getProduct().getUnit().getUnitSize();
@@ -49,7 +49,7 @@ public class MaterialBudgetModel {
         for (AnswerQuizModel answer : answers) {
 
             Long answerQuestionId = answer.getQuestion().getId();
-
+            System.out.println(answer);
             if (idQuestionSub == answerQuestionId) {
                 ProductModel substituteProduct = answer.getAnswer().getProduct();
 
@@ -70,13 +70,13 @@ public class MaterialBudgetModel {
             double priceQuestion2 = 0;
 
             for (AnswerQuizModel answer : answers) {
-                if (idFormulaQuestion1 == answer.getId()) {
+                if (idFormulaQuestion1 == answer.getQuestion().getId()) {
                     priceQuestion1 = answer.getAnswer().getValue();
                 }
             }
 
             for (AnswerQuizModel answer : answers) {
-                if (idFormulaQuestion2 == answer.getId()) {
+                if (idFormulaQuestion2 == answer.getQuestion().getId()) {
                     priceQuestion2 = answer.getAnswer().getValue();
                 }
             }

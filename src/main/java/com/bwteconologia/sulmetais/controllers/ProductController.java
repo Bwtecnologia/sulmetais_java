@@ -1,7 +1,6 @@
 package com.bwteconologia.sulmetais.controllers;
 
 
-import com.bwteconologia.sulmetais.exceptions.ColorNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.GroupNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.ProductNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.UnitNotFoundException;
@@ -53,8 +52,7 @@ public class ProductController {
 
     @PutMapping(value = "/products/{id}")
     public ResponseEntity<ProductModel> updateProductWithUnitAndGroup(@PathVariable Long id, @RequestBody ProductModel product,
-                                                                      @RequestParam Long unitId, @RequestParam(required = false) Long groupId) {
-        Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(unitId));
+                                                                      @RequestParam(required = false) Long unitId, @RequestParam(required = false) Long productGroupId) {
 
         Set<GroupColorModel> groupColorModelList = new HashSet<>();
         //verify if groupcolor exist in groupcolors table
@@ -67,11 +65,6 @@ public class ProductController {
             groupColorModelList.add(groupColorModelOptional.get());
         }
 
-
-        if (!unitOptional.isPresent()) {
-            throw new ProductNotFoundException("Unit not found");
-        }
-
         Optional<ProductModel> productOptional = productService.findById(Math.toIntExact(id));
 
         if (!productOptional.isPresent()) {
@@ -80,9 +73,19 @@ public class ProductController {
 
         ProductModel existingProduct = productOptional.get();
 
+        if(unitId != null){
+            Optional<UnitModel> unitOptional = unitService.findById(Math.toIntExact(unitId));
+            if (!unitOptional.isPresent()) {
+                throw new ProductNotFoundException("Unit not found");
+            }
+            UnitModel unit = unitOptional.get();
+            existingProduct.setUnit(unit);
+
+        }
+
         //se o group id for existente ele tenta
-        if(groupId != null) {
-            Optional<ProductGroupModel> groupOptional = groupService.findById(Math.toIntExact(groupId));
+        if(productGroupId != null) {
+            Optional<ProductGroupModel> groupOptional = groupService.findById(Math.toIntExact(productGroupId));
             if (!groupOptional.isPresent()) {
                 throw  new GroupNotFoundException("Group not found for this product");
             }
@@ -90,9 +93,9 @@ public class ProductController {
                 existingProduct.setProductGroup(group);
 
         }
-        UnitModel unit = unitOptional.get();
 
-        existingProduct.setUnit(unit);
+
+
         existingProduct.setProductName(product.getProductName());
         existingProduct.setProductBuy(product.getProductBuy());
         existingProduct.setProductFabricated(product.getProductFabricated());

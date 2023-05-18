@@ -14,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -34,7 +31,7 @@ public class QuizController {
 
 
     @GetMapping(value = "/quiz")
-    public ResponseEntity<List<QuizModel>> getAllQuiz(){
+    public ResponseEntity<List<QuizModel>> getAllQuiz() {
         List<QuizModel> quiz = quizService.getAllQuestionnaires();
         return ResponseEntity.ok(quiz);
     }
@@ -48,17 +45,18 @@ public class QuizController {
         Optional<ProductModel> productOptional = productService.findById(Math.toIntExact(productId));
 
 
-        if(!productOptional.isPresent()){
+        if (!productOptional.isPresent()) {
             throw new ProductNotFoundException("Product not found");
         }
 
         Set<QuestionModel> questionModelList = new HashSet<>();
 
-        for(QuestionModel questionModel : quiz.getQuestions()) {
+        for (QuestionModel questionModel : quiz.getQuestions()) {
             Optional<QuestionModel> questionModelOptional =
-            questionService.findById(Math.toIntExact(questionModel.getId()));
+                    questionService.findById(Math.toIntExact(questionModel.getId()));
 
-            if(questionModelOptional.isEmpty()) throw new QuestionNotFoundException("Question id:" + questionModel.getId() +" not found");
+            if (questionModelOptional.isEmpty())
+                throw new QuestionNotFoundException("Question id:" + questionModel.getId() + " not found");
 
             questionModelList.add(questionModelOptional.get());
         }
@@ -76,7 +74,7 @@ public class QuizController {
     }
 
     @GetMapping(value = "/quiz/{id}")
-    public ResponseEntity<QuizModel> findQuizById(@PathVariable("id") Long id){
+    public ResponseEntity<QuizModel> findQuizById(@PathVariable("id") Long id) {
         QuizModel quiz = quizService.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new QuizNotFoundException("Quiz not found"));
         return ResponseEntity.ok().body(quiz);
@@ -86,7 +84,7 @@ public class QuizController {
     public ResponseEntity<QuizModel> updateQuiz(@PathVariable Long id, @RequestBody QuizModel quiz) {
         Optional<QuizModel> quizOptional = quizService.findById(Math.toIntExact(id));
 
-        if(!quizOptional.isPresent()){
+        if (!quizOptional.isPresent()) {
             throw new QuizNotFoundException("Quiz not found");
         }
 
@@ -94,7 +92,7 @@ public class QuizController {
 
         existingQuiz.setProduct(quiz.getProduct());
         existingQuiz.setQuestions(quiz.getQuestions());
-
+        existingQuiz.setUpdatedAt(new Date());
 
         QuizModel updatedQuiz = quizService.save(existingQuiz);
 
@@ -102,11 +100,11 @@ public class QuizController {
     }
 
     @DeleteMapping("/quiz/{id}")
-    public ResponseEntity<ResponseObjectModel> deleteQuiz(@PathVariable("id") Long id){
+    public ResponseEntity<ResponseObjectModel> deleteQuiz(@PathVariable("id") Long id) {
         QuizModel quiz = quizService.findById(Math.toIntExact(id))
-                .orElseThrow(() ->new QuestionNotFoundException("Question with " + id + " is Not Found!"));
+                .orElseThrow(() -> new QuestionNotFoundException("Question with " + id + " is Not Found!"));
         quizService.deleteById(Math.toIntExact(id));
-        ResponseObjectModel responseObjectModel = new ResponseObjectModel(id, "Question with ID :"+id+" is deleted");
+        ResponseObjectModel responseObjectModel = new ResponseObjectModel(id, "Question with ID :" + id + " is deleted");
         return ResponseEntity.ok(responseObjectModel);
     }
 }
