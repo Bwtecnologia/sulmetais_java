@@ -22,6 +22,10 @@ public class MaterialListModel {
     @JoinColumn
     private QuestionModel itemSubstitute;
 
+//    @ManyToOne
+//    @JsonIgnore
+//    private QuizModel quiz;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn
     private List<FormulaMaterialModel> formula;

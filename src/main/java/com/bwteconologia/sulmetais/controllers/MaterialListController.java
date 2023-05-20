@@ -72,10 +72,10 @@ public class MaterialListController {
 
         List<FormulaMaterialModel>formulaList = material.getFormula();
 
-        if(formulaList.size() == 1){
-            if(formulaList.get(0).getQuestion2() == null) throw new MaterialListQuestion2IsNullException
-                    ("If you have only 1 formula you cannot have only one question!");
-        }
+//        if(formulaList.size() == 1){
+//            if(formulaList.get(0).getQuestion2() == null) throw new MaterialListQuestion2IsNullException
+//                    ("If you have only 1 formula you cannot have only one question!");
+//        }
 
 
         return materialListService.save(material);

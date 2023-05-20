@@ -22,5 +22,4 @@ public class BudgetsModel {
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private QuizModel quizId;
-
 }

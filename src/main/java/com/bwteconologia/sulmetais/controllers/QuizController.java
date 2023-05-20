@@ -61,12 +61,12 @@ public class QuizController {
             questionModelList.add(questionModelOptional.get());
         }
 
-        quiz.setQuestions(questionModelList);
+
 
         ProductModel product = productOptional.get();
-
+        quiz.setMaterial(quiz.getMaterial());
         quiz.setProduct(product);
-
+        quiz.setQuestions(questionModelList);
 
         quizService.save(quiz);
 
