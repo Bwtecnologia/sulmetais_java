@@ -55,8 +55,12 @@ public class BudgetsController {
         }
 
         budgetsModel.setMaterials(materialBudgetModelList);
-
+        budgetsModel.setQuizId(quizOptional.get());
         return budgetsModel;
+    }
 
+    @PostMapping("/budgets/save")
+    BudgetsModel setSaveOfBudget(@RequestBody BudgetsModel budgetModel){
+        return budgetsService.saveBudget(budgetModel);
     }
 }

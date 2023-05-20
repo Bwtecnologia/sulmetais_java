@@ -50,13 +50,13 @@ public class MaterialListController {
     @PostMapping("/material")
     MaterialListModel save(
             @RequestBody MaterialListModel material,
-//            @RequestParam Long quizId,
+            @RequestParam Long quizId,
             @RequestParam Long productId,
             @RequestParam(required = false) Long itemSubId) {
 
-//        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
-//        if(quizModelOptional.isEmpty()) throw new QuizNotFoundException("Quiz doesnt exists!");
-//        material.setQuiz(quizModelOptional.get());
+        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+        if(quizModelOptional.isEmpty()) throw new QuizNotFoundException("Quiz doesnt exists!");
+        material.setQuiz(quizModelOptional.get());
 
 
         Optional<ProductModel> productModelOptional = productService.findById(Math.toIntExact(productId));
@@ -72,10 +72,10 @@ public class MaterialListController {
 
         List<FormulaMaterialModel>formulaList = material.getFormula();
 
-//        if(formulaList.size() == 1){
-//            if(formulaList.get(0).getQuestion2() == null) throw new MaterialListQuestion2IsNullException
-//                    ("If you have only 1 formula you cannot have only one question!");
-//        }
+        if(formulaList.size() == 1){
+            if(formulaList.get(0).getQuestion2() == null) throw new MaterialListQuestion2IsNullException
+                    ("If you have only 1 formula you cannot have only one question!");
+        }
 
 
         return materialListService.save(material);

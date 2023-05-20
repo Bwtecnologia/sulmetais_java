@@ -27,8 +27,7 @@ public class QuizModel {
 
 
 
-    @OneToMany()
-    @JoinColumn(name = "materials_id")
+    @OneToMany(mappedBy = "quiz")
     List<MaterialListModel> material;
 
     @OneToOne

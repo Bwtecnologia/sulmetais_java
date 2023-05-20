@@ -22,9 +22,10 @@ public class MaterialListModel {
     @JoinColumn
     private QuestionModel itemSubstitute;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    private QuizModel quiz;
+    @ManyToOne
+    @JoinColumn(name = "quiz_id")
+    @JsonIgnore
+    private QuizModel quiz;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn
