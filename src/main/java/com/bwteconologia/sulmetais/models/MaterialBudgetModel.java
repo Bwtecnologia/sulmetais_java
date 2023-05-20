@@ -77,7 +77,9 @@ public class MaterialBudgetModel {
                 for (AnswerQuizModel answer : answers) {
                     if (idFormulaQuestion1 == answer.getQuestion().getId()) {
 
-                        priceQuestion1 = answer.getAnswer().getProduct().getProductPrice();
+                        if(answer.getAnswer().getProduct() != null){
+                            priceQuestion1 = answer.getAnswer().getProduct().getProductPrice();
+                        }
 
                         if(answer.getQuestion().getType().equals("aberta"))
                         {priceQuestion1 = answer.getAnswer().getValue();}
@@ -89,8 +91,9 @@ public class MaterialBudgetModel {
                 if(idFormulaQuestion2.isPresent()){
                 for (AnswerQuizModel answer : answers) {
                     if (formula.getQuestion2().getId() == answer.getQuestion().getId()) {
-                        priceQuestion2 = answer.getAnswer().getValue();
-
+                        if(answer.getAnswer().getProduct() != null) {
+                            priceQuestion2 = answer.getAnswer().getValue();
+                        }
                         if(answer.getQuestion().getType().equals("aberta")){
                             priceQuestion2 = answer.getAnswer().getValue();
                         }
