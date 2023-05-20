@@ -16,7 +16,7 @@ public class BudgetsModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<MaterialBudgetModel> materials;
 
     @ManyToOne

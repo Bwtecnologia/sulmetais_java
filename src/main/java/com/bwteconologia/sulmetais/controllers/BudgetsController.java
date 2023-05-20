@@ -61,6 +61,8 @@ public class BudgetsController {
 
     @PostMapping("/budgets/save")
     BudgetsModel setSaveOfBudget(@RequestBody BudgetsModel budgetModel){
+        BudgetsModel budgets = new BudgetsModel();
+
         return budgetsService.saveBudget(budgetModel);
     }
 }
