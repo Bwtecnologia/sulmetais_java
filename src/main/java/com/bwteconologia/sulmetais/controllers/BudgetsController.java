@@ -42,7 +42,6 @@ public class BudgetsController {
 
         Optional<QuizModel> quizOptional = quizService.findById(Math.toIntExact(quizId));
         if(quizOptional.isEmpty()) throw new QuizNotFoundException("Quiz with ID:" + quizId + "doesnt exists");
-
         List<MaterialListModel> listMaterial = quizOptional.get().getMaterial();
 
         BudgetsModel budgetsModel = new BudgetsModel();
@@ -60,8 +59,15 @@ public class BudgetsController {
     }
 
     @PostMapping("/budgets/save")
-    BudgetsModel setSaveOfBudget(@RequestBody BudgetsModel budgetModel){
+    BudgetsModel setSaveOfBudget(@RequestBody BudgetsModel budgetModel, @RequestParam(required = true) Long quizId){
         BudgetsModel budgets = new BudgetsModel();
+        Optional<QuizModel> quizOptional = quizService.findById(Math.toIntExact(quizId));
+        if(quizOptional.isEmpty()) throw new QuizNotFoundException("Quiz with ID:" + quizId + "doesnt exists");
+        List<MaterialListModel> listMaterial = quizOptional.get().getMaterial();
+
+        budgets = budgetModel;
+
+        budgets.setQuizId(quizOptional.get());
 
         return budgetsService.saveBudget(budgetModel);
     }
