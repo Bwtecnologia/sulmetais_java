@@ -147,6 +147,7 @@ public class MaterialBudgetModel {
                                 break;
                             case "divided":
                                 quantity /= priceQuestion1;
+                                break;
                             default:
                                 throw new MaterialOperandNotExistsException("This operand: " + formula.getOperation() + " doesnt exists!");
                         }
