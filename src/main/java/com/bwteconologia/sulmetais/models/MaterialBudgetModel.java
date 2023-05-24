@@ -5,6 +5,8 @@ import com.bwteconologia.sulmetais.exceptions.materialbudget.MaterialOperandNotE
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public class MaterialBudgetModel {
     private String unity;
 
     @Column
-    private int quantity;
+    private double quantity;
 
     @Column
     private double price;
@@ -38,6 +40,7 @@ public class MaterialBudgetModel {
     private BudgetsModel budget;
 
     public MaterialBudgetModel(List<AnswerQuizModel> answers, MaterialListModel materialList) {
+
 
         this.materialName = materialList.getProduct().getProductName();
         this.unity = materialList.getProduct().getUnit().getUnitSize();
@@ -53,6 +56,7 @@ public class MaterialBudgetModel {
                 Long answerQuestionId = answer.getQuestion().getId();
 
                 if (idQuestionSub == answerQuestionId) {
+
                     ProductModel substituteProduct = answer.getAnswer().getProduct();
 
                     this.materialName = substituteProduct.getProductName();
@@ -64,7 +68,7 @@ public class MaterialBudgetModel {
         }
 
 
-        int quantity = 0;
+        double quantity = 0;
 
 
             for (FormulaMaterialModel formula : materialList.getFormula()) {
@@ -82,16 +86,7 @@ public class MaterialBudgetModel {
 
                                 priceQuestion1 = answer.getAnswer().getValue();
 
-                                if (answer.getAnswer().getProduct() != null) {
-                                    priceQuestion1 = answer.getAnswer().getProduct().getProductPrice();
-                                }
-
-
                             }
-                        }
-
-                        else {
-                            priceQuestion1 = answer.getAnswer().getValue();
                         }
                     }
 
@@ -103,13 +98,8 @@ public class MaterialBudgetModel {
 
                                 priceQuestion2 = answer.getAnswer().getValue();
 
-
-                                if (answer.getAnswer().getProduct() != null) {
-                                    priceQuestion2 = answer.getAnswer().getProduct().getProductPrice();
-                                }
-
                             }
-                        }   else {priceQuestion2 = answer.getAnswer().getValue();}
+                        }
 
                         }
 
@@ -155,7 +145,9 @@ public class MaterialBudgetModel {
 
         }
 
-        if (quantity > 0) this.quantity = quantity;
+        BigDecimal bd = new BigDecimal(quantity).setScale(2, RoundingMode.HALF_UP);
+
+        if (quantity > 0) this.quantity = bd.doubleValue();
 
         this.totalPrice = this.quantity * this.price;
     }
