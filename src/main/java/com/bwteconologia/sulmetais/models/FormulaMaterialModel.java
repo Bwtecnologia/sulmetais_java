@@ -14,8 +14,14 @@ public class FormulaMaterialModel {
     @Column
     private String operation;
 
+    @Column(nullable = false)
+    double valor1;
+
+    @Column
+    double valor2;
+
     @OneToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true)
     private QuestionModel question1;
 
     @OneToOne

@@ -71,77 +71,81 @@ public class MaterialBudgetModel {
         double quantity = 0;
 
 
-            for (FormulaMaterialModel formula : materialList.getFormula()) {
+        for (FormulaMaterialModel formula : materialList.getFormula()) {
 
-                Long idFormulaQuestion1 = formula.getQuestion1().getId();
-                Optional<QuestionModel> idFormulaQuestion2 = Optional.ofNullable(formula.getQuestion2());
+            Optional<QuestionModel> idFormulaQuestion1 = Optional.ofNullable(formula.getQuestion1());
+            Optional<QuestionModel> idFormulaQuestion2 = Optional.ofNullable(formula.getQuestion2());
 
-                double priceQuestion1 = 0;
-                double priceQuestion2 = 0;
+            double priceQuestion1 = formula.getValor1();
+            double priceQuestion2 = formula.getValor2();
 
-                    for (AnswerQuizModel answer : answers) {
 
-                        if(answer.getQuestion() != null) {
-                            if (idFormulaQuestion1 == answer.getQuestion().getId()) {
+            if (idFormulaQuestion1.isPresent()) {
+                for (AnswerQuizModel answer : answers) {
+                    if (answer.getQuestion() != null) {
+                        if (formula.getQuestion1().getId() == answer.getQuestion().getId()) {
 
-                                priceQuestion1 = answer.getAnswer().getValue();
+                            priceQuestion1 = answer.getAnswer().getValue();
 
-                            }
                         }
                     }
 
+                }
 
-                    if (idFormulaQuestion2.isPresent()) {
-                        for (AnswerQuizModel answer : answers) {
-                            if(answer.getQuestion() != null) {
-                            if (formula.getQuestion2().getId() == answer.getQuestion().getId()) {
-
-                                priceQuestion2 = answer.getAnswer().getValue();
-
-                            }
-                        }
-
-                        }
-
-                    }
+            }
 
 
-                    if (idFormulaQuestion2.isPresent()) {
-                        switch (formula.getOperation()) {
-                            case "plus":
-                                quantity += priceQuestion1 + priceQuestion2;
-                                break;
-                            case "times":
-                                quantity += priceQuestion1 * priceQuestion2;
-                                break;
-                            case "minor":
-                                quantity += priceQuestion1 - priceQuestion2;
-                                break;
-                            case "divided":
-                                quantity += priceQuestion1 / priceQuestion2;
-                                break;
-                            default:
-                                throw new MaterialOperandNotExistsException("This operand: " + formula.getOperation() + " doesnt exists!");
-                        }
+            if (idFormulaQuestion2.isPresent()) {
+                for (AnswerQuizModel answer : answers) {
+                    if (answer.getQuestion() != null) {
+                        if (formula.getQuestion2().getId() == answer.getQuestion().getId()) {
 
-                    } else {
-                        switch (formula.getOperation()) {
-                            case "plus":
-                                quantity += priceQuestion1;
-                                break;
-                            case "times":
-                                quantity *= priceQuestion1;
-                                break;
-                            case "minor":
-                                quantity -= priceQuestion1;
-                                break;
-                            case "divided":
-                                quantity /= priceQuestion1;
-                                break;
-                            default:
-                                throw new MaterialOperandNotExistsException("This operand: " + formula.getOperation() + " doesnt exists!");
+                            priceQuestion2 = answer.getAnswer().getValue();
+
                         }
                     }
+
+                }
+
+            }
+
+
+            if (priceQuestion2 != 0) {
+                switch (formula.getOperation()) {
+                    case "plus":
+                        quantity += priceQuestion1 + priceQuestion2;
+                        break;
+                    case "times":
+                        quantity += priceQuestion1 * priceQuestion2;
+                        break;
+                    case "minor":
+                        quantity += priceQuestion1 - priceQuestion2;
+                        break;
+                    case "divided":
+                        quantity += priceQuestion1 / priceQuestion2;
+                        break;
+                    default:
+                        throw new MaterialOperandNotExistsException("This operand: " + formula.getOperation() + " doesnt exists!");
+                }
+
+            } else {
+                switch (formula.getOperation()) {
+                    case "plus":
+                        quantity += priceQuestion1;
+                        break;
+                    case "times":
+                        quantity *= priceQuestion1;
+                        break;
+                    case "minor":
+                        quantity -= priceQuestion1;
+                        break;
+                    case "divided":
+                        quantity /= priceQuestion1;
+                        break;
+                    default:
+                        throw new MaterialOperandNotExistsException("This operand: " + formula.getOperation() + " doesnt exists!");
+                }
+            }
 
         }
 
