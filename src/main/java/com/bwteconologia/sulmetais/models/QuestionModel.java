@@ -24,6 +24,10 @@ public class QuestionModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    @JoinColumn
+    private BodyFormulaQuestionModel formula;
+
     @Column(name = "question_type")
     private String type;
 
@@ -37,6 +41,9 @@ public class QuestionModel {
     @OneToMany(mappedBy = "question")
     @JsonIgnore
     private List<AnswerModel> answers;
+
+    @OneToMany(mappedBy = "questionForm")
+    private List<BodyFormulaQuestionModel> bodyFormula;
 
     @ManyToMany(mappedBy = "questions")
     @JsonIgnore
