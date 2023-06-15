@@ -1,15 +1,14 @@
 package com.bwteconologia.sulmetais.controllers;
 
-import com.bwteconologia.sulmetais.exceptions.QuestionAlreadyExistsException;
-import com.bwteconologia.sulmetais.exceptions.QuestionNotFoundException;
-import com.bwteconologia.sulmetais.models.AnswerModel;
-import com.bwteconologia.sulmetais.models.QuestionModel;
-import com.bwteconologia.sulmetais.models.ResponseObjectModel;
+import com.bwteconologia.sulmetais.exceptions.*;
+import com.bwteconologia.sulmetais.models.*;
 import com.bwteconologia.sulmetais.services.AnswerService;
 import com.bwteconologia.sulmetais.services.QuestionService;
+import com.bwteconologia.sulmetais.services.QuizService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -26,6 +26,8 @@ public class QuestionController {
     QuestionService questionService;
     @Autowired
     AnswerService answerService;
+    @Autowired
+    QuizService quizService;
 
     @GetMapping(value = "/questions")
     public ResponseEntity<List<QuestionModel>> getAllQuestions(){
@@ -54,6 +56,7 @@ public class QuestionController {
                 .orElseThrow(() -> new QuestionNotFoundException("Question with " + id + " is Not Found!"));
         question.setType(questionUpdated.getType());
         question.setDescription(questionUpdated.getDescription());
+        question.settBodyFormula(questionUpdated.getBodyFormula());
         question.setUpdatedAt(new Date());
 
         QuestionModel updatedQuestion = questionService.save(question);
@@ -84,5 +87,135 @@ public class QuestionController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/questions/{id}/formula")
+    public ResponseEntity<QuestionModel> insertFormulaInQuestion
+            (@PathVariable Long id,
+             @PathParam(value = "quizId") Long quizId,
+             @RequestBody List<BodyFormulaQuestionModel> bodyFormula) {
+
+        Optional<QuestionModel> optionalQuestion = questionService.findById(Math.toIntExact(id));
+        if(optionalQuestion.isEmpty()) throw new QuestionNotFoundException("Question with " + id + " is Not Found!");
+
+
+        Optional<QuizModel> optionalQuiz = quizService.findById(Math.toIntExact(quizId));
+        if(optionalQuiz.isEmpty()) throw new QuizNotFoundException("Quiz with " + id + " is Not Found!");
+
+
+
+        //verify if bodyformula almost one item in json
+        Optional<List<BodyFormulaQuestionModel>> optionalBodyFormula = Optional.ofNullable(bodyFormula);
+        if(optionalBodyFormula.isEmpty()) throw new FormulaQuestionWrongAddException("Body question formula cannot be null");
+        List<BodyFormulaQuestionModel> bodyFormulaQuestion = optionalBodyFormula.get();
+        if(bodyFormulaQuestion.isEmpty()) throw new FormulaQuestionWrongAddException("You need one body formula to add formula");
+
+
+
+
+
+        //verifica
+        for(BodyFormulaQuestionModel body : bodyFormula){
+            if(body.getFormulas() == null) throw new FormulaQuestionWrongAddException("Body Formula is in incorrect format");
+            body.setQuestionId(id);
+            if(body.getFormulas().isEmpty()) throw new FormulaQuestionWrongAddException("You cannot have a body formula without 1 formula!");
+
+            //verify if exists at least one answer in bodyformula
+            Optional<List<AnswerModel>> optionalAnswerInBodyFormula = Optional.ofNullable(body.getAnswersIfTrue());
+            if(optionalAnswerInBodyFormula.isEmpty()) throw new FormulaQuestionWrongAddException
+                    ("To register one answer you need one answer it it's true");
+            List<AnswerModel> questionInBodyFormula = optionalAnswerInBodyFormula.get();
+            if(questionInBodyFormula.isEmpty()) throw new FormulaQuestionWrongAddException
+                    ("To register one answer you need one answer it it's true");
+
+            for(FormulasQuestionModel formula : body.getFormulas()){
+
+                formula.setBodyFormulaId(id);
+
+                //verifica se essa question está dentro do quiz
+                boolean questionIsInTheQuiz = false;
+                for(QuestionModel question : optionalQuiz.get().getQuestions()){
+                    if(question.getId() == formula.getQuestion().getId()) questionIsInTheQuiz = true;
+
+                }
+                if(!questionIsInTheQuiz) throw new FormulaQuestionWrongAddException("This question is not in the referred Quiz ID!");
+
+            }
+        }
+        QuestionModel question = optionalQuestion.get();
+
+        question.settBodyFormula(bodyFormulaQuestion);
+        question.setFormula(true);
+        questionService.save(question);
+
+        return ResponseEntity.ok(question);
+    }
+
+    @GetMapping("/questions/{id}/formula/calculator")
+    public ResponseEntity<List<AnswerModel>> returnResultOfFormulaCalc
+            (@PathVariable Long id, @RequestBody List<AnswerQuizModel> answersQuiz){
+
+        System.out.println("até aqui roda");
+
+
+        Optional<QuestionModel> optionalQuestion = questionService.findById(Math.toIntExact(id));
+        if(optionalQuestion.isEmpty()) throw new QuestionNotFoundException("Question with " + id + " is Not Found!");
+        QuestionModel question = optionalQuestion.get();
+        if(!question.isFormula()) throw new QuestionNotFoundException("This question doesn't have formula to calculate!");
+
+
+        if(answersQuiz.isEmpty()) throw new FormulaQuestionErrorInCalculatingException
+                ("You need to pass the answers of quiz to get the response for formula!");
+
+        List<AnswerModel>answerList = question.getAnswers();
+
+        //first see OR
+        for(BodyFormulaQuestionModel bodyFormula : question.getBodyFormula()){
+
+            String operationOr = "or";
+            String operationIf = "if";
+
+            boolean isAllAswerCorrect = true;
+
+            for(FormulasQuestionModel formula : bodyFormula.getFormulas()
+                    .stream()
+                    .filter(formulas -> formulas.getType().equals(operationIf))
+                    .toList()){
+
+                //overwrite old answerlist from the question to the associated in bodyFormula if it's true
+                for(AnswerQuizModel answer : answersQuiz){
+
+                    if (answer.getQuestion().getId().equals(formula.getQuestion().getId())){
+                        if (!answer.getAnswer().getId().equals(formula.getAnswer().getId())){
+                            isAllAswerCorrect = false;
+                        }
+                    }
+                }
+            }
+
+            if (isAllAswerCorrect) answerList = bodyFormula.getAnswersIfTrue();
+
+            for(FormulasQuestionModel formula : bodyFormula.getFormulas()
+                    .stream()
+                    .filter(formulas -> formulas.getType().equals(operationOr))
+                    .toList()){
+
+                //overwrite old answerlist from the question to the associated in bodyFormula if it's true
+                for(AnswerQuizModel answerQuiz : answersQuiz){
+                    if (answerQuiz.getQuestion().getId() == formula.getQuestion().getId()){
+                        if (answerQuiz.getAnswer().getId() == formula.getAnswer().getId()){
+                            answerList = bodyFormula.getAnswersIfTrue();
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+
+        return ResponseEntity.ok(answerList);
+        //question.getFormula();
+    }
+
     }
 

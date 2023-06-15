@@ -8,17 +8,22 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "body_formula")
+@Table(name = "body_formula_question")
 public class BodyFormulaQuestionModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private QuestionModel questionForm;
+    @Column(name = "question_id", insertable = false, updatable = false)
+    private Long questionId;
 
-    @OneToMany
-    private List<FormulasQuestionModel> formulasQuestion;
+    @OneToMany(cascade = CascadeType.ALL,  orphanRemoval = true)
+    @JoinColumn(name = "body_formula_question_id")
+    private List<FormulasQuestionModel> formulas;
+
+    @ManyToMany
+    @JoinColumn
+    private List<AnswerModel> answersIfTrue;
 
 }
