@@ -181,15 +181,18 @@ public class QuestionController {
                     .filter(formulas -> formulas.getType().equals(operationIf))
                     .toList()){
 
+                boolean questionExistsInQuiz = false;
                 //overwrite old answerlist from the question to the associated in bodyFormula if it's true
                 for(AnswerQuizModel answer : answersQuiz){
-
                     if (answer.getQuestion().getId().equals(formula.getQuestion().getId())){
+                        questionExistsInQuiz = true;
                         if (!answer.getAnswer().getId().equals(formula.getAnswer().getId())){
                             isAllAswerCorrect = false;
                         }
                     }
                 }
+
+                if (!questionExistsInQuiz) isAllAswerCorrect = false;
             }
 
             if (isAllAswerCorrect) answerList = bodyFormula.getAnswersIfTrue();
