@@ -101,20 +101,15 @@ public class QuestionController {
         Optional<QuizModel> optionalQuiz = quizService.findById(Math.toIntExact(quizId));
         if(optionalQuiz.isEmpty()) throw new QuizNotFoundException("Quiz with " + id + " is Not Found!");
 
-
-
         //verify if bodyformula almost one item in json
         Optional<List<BodyFormulaQuestionModel>> optionalBodyFormula = Optional.ofNullable(bodyFormula);
         if(optionalBodyFormula.isEmpty()) throw new FormulaQuestionWrongAddException("Body question formula cannot be null");
         List<BodyFormulaQuestionModel> bodyFormulaQuestion = optionalBodyFormula.get();
         if(bodyFormulaQuestion.isEmpty()) throw new FormulaQuestionWrongAddException("You need one body formula to add formula");
 
-
-
-
-
         //verifica
         for(BodyFormulaQuestionModel body : bodyFormula){
+
             if(body.getFormulas() == null) throw new FormulaQuestionWrongAddException("Body Formula is in incorrect format");
             body.setQuestionId(id);
             if(body.getFormulas().isEmpty()) throw new FormulaQuestionWrongAddException("You cannot have a body formula without 1 formula!");
@@ -122,12 +117,15 @@ public class QuestionController {
             //verify if exists at least one answer in bodyformula
             Optional<List<AnswerModel>> optionalAnswerInBodyFormula = Optional.ofNullable(body.getAnswersIfTrue());
             if(optionalAnswerInBodyFormula.isEmpty()) throw new FormulaQuestionWrongAddException
-                    ("To register one answer you need one answer it it's true");
+                    ("To register one answer you need one answer if it's true");
             List<AnswerModel> questionInBodyFormula = optionalAnswerInBodyFormula.get();
             if(questionInBodyFormula.isEmpty()) throw new FormulaQuestionWrongAddException
-                    ("To register one answer you need one answer it it's true");
+                    ("To register one answer you need one answer if it's true");
 
             for(FormulasQuestionModel formula : body.getFormulas()){
+
+                if(formula.getQuestion().getId().equals(id)) throw new
+                        FormulaQuestionWrongAddException("The formula can't refer to the father question.");
 
                 formula.setBodyFormulaId(id);
 
@@ -150,6 +148,18 @@ public class QuestionController {
         return ResponseEntity.ok(question);
     }
 
+    @GetMapping("/questions/position")
+    public ResponseEntity<List<QuestionModel>> returnAllByQuizOrderByPosition(@RequestParam Long quizId) {
+
+        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+        if (quizModelOptional.isEmpty()) throw new QuizNotFoundException("The quiz whid ID: " + quizId +" don't exists!");
+
+        Optional<List<QuestionModel>> questions = questionService.findAllByQuizOrderByPosition(quizId);
+        if (questions.isEmpty()) throw new QuestionNotFoundException("This quiz does't have any question registered!");
+
+        return ResponseEntity.ok(questions.get());
+    }
+
     @GetMapping("/questions/{id}/formula/calculator")
     public ResponseEntity<List<AnswerModel>> returnResultOfFormulaCalc
             (@PathVariable Long id, @RequestBody List<AnswerQuizModel> answersQuiz){
@@ -162,17 +172,17 @@ public class QuestionController {
         QuestionModel question = optionalQuestion.get();
         if(!question.isFormula()) throw new QuestionNotFoundException("This question doesn't have formula to calculate!");
 
-
         if(answersQuiz.isEmpty()) throw new FormulaQuestionErrorInCalculatingException
                 ("You need to pass the answers of quiz to get the response for formula!");
 
         List<AnswerModel>answerList = question.getAnswers();
 
+
         //first see OR
         for(BodyFormulaQuestionModel bodyFormula : question.getBodyFormula()){
 
             String operationOr = "or";
-            String operationIf = "if";
+            String operationIf = "and";
 
             boolean isAllAswerCorrect = true;
 
