@@ -7,6 +7,7 @@ import com.bwteconologia.sulmetais.models.*;
 import com.bwteconologia.sulmetais.services.BudgetsService;
 import com.bwteconologia.sulmetais.services.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -70,5 +71,16 @@ public class BudgetsController {
         budgets.setQuizId(quizOptional.get());
 
         return budgetsService.saveBudget(budgetModel);
+    }
+
+    @DeleteMapping("/budgets/{id}")
+    String deleteBudget(@PathVariable Long id){
+
+        Optional<BudgetsModel> budgetsModelOptional = budgetsService.findBudgetById(id);
+        if(budgetsModelOptional.isEmpty()) throw new BudgetsNotFoundException("Budget with ID:" + id + " doesnt exist!");
+
+        budgetsService.deleteBudget(id);
+
+        return "Budget with ID: " + id + " has been removed!";
     }
 }
