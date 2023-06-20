@@ -154,7 +154,7 @@ public class QuestionController {
         Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
         if (quizModelOptional.isEmpty()) throw new QuizNotFoundException("The quiz whid ID: " + quizId +" don't exists!");
 
-        Optional<List<QuestionModel>> questions = questionService.findAllByQuizOrderByPosition(quizId);
+        Optional<List<QuestionModel>> questions = questionService.findAllByQuizOrderByPosition(quizModelOptional.get());
         if (questions.isEmpty()) throw new QuestionNotFoundException("This quiz does't have any question registered!");
 
         return ResponseEntity.ok(questions.get());
