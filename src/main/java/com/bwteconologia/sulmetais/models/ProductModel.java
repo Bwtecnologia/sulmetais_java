@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Data
@@ -44,9 +42,13 @@ public class ProductModel {
     @JoinColumn(name = "product_unit_id", nullable = false)
     private UnitModel unit;
 
-    @ManyToOne
-    @JoinColumn(name = "group_type_id")
-    private ProductGroupModel productGroup;
+    @ManyToMany
+    @JoinTable(
+            name = "group_products",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns =  @JoinColumn(name = "group_product_id")
+    )
+    private List<ProductGroupModel> productGroups = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

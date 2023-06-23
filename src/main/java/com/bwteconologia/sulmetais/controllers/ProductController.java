@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 @RestController
@@ -55,6 +56,7 @@ public class ProductController {
                                                                       @RequestParam(required = false) Long unitId, @RequestParam(required = false) Long productGroupId) {
 
         Set<GroupColorModel> groupColorModelList = new HashSet<>();
+        Optional<List<ProductGroupModel>> groupOptional = Optional.ofNullable(product.getProductGroups());
         //verify if groupcolor exist in groupcolors table
         for(GroupColorModel groupColorModel : product.getGroupColors()) {
             Optional<GroupColorModel> groupColorModelOptional =
@@ -83,19 +85,52 @@ public class ProductController {
 
         }
 
-        //se o group id for existente ele tenta
-        if(productGroupId != null) {
-            Optional<ProductGroupModel> groupOptional = groupService.findById(Math.toIntExact(productGroupId));
-            if (!groupOptional.isPresent()) {
-                throw  new GroupNotFoundException("Group not found for this product");
-            }
-                ProductGroupModel group = groupOptional.get();
-                existingProduct.setProductGroup(group);
 
+
+        //se o group id for existente ele tenta
+//        if(productGroupId != null) {
+//            Optional<ProductGroupModel> groupOptional = groupService.findById(Math.toIntExact(productGroupId));
+//            if (!groupOptional.isPresent()) {
+//                throw  new GroupNotFoundException("Group not found for this product");
+//            }
+//                ProductGroupModel group = groupOptional.get();
+//                existingProduct.setProductGroup(group);
+//        }
+
+        if (groupOptional.isPresent()) {
+
+            List<ProductGroupModel> group = new ArrayList<>();
+
+
+            for (ProductGroupModel groupModel : groupOptional.get()) {
+                Optional<ProductGroupModel> optionalGroup =
+                        groupService.findById(Math.toIntExact(groupModel.getId()));
+
+                if(optionalGroup.isEmpty()) throw new GroupNotFoundException("Group with id not found");
+                group.add(optionalGroup.get());
+            }
+
+            product.setProductGroups(group);
+        }
+
+        if (groupOptional.isPresent()) {
+
+            List<ProductGroupModel> group = new ArrayList<>();
+
+
+            for (ProductGroupModel groupModel : groupOptional.get()) {
+                Optional<ProductGroupModel> optionalGroup =
+                        groupService.findById(Math.toIntExact(groupModel.getId()));
+
+                if(optionalGroup.isEmpty()) throw new GroupNotFoundException("Group with id not found");
+                group.add(optionalGroup.get());
+            }
+
+            product.setProductGroups(group);
         }
 
 
-
+        existingProduct.setProductGroups(product.getProductGroups());
         existingProduct.setProductName(product.getProductName());
         existingProduct.setProductBuy(product.getProductBuy());
         existingProduct.setProductFabricated(product.getProductFabricated());
@@ -125,7 +160,7 @@ public class ProductController {
     @PostMapping(value = "/products")
     public ResponseEntity<ProductModel> createProductWithUnitAndGroup(@RequestBody ProductModel product) {
         Optional<UnitModel> unitOptional = Optional.ofNullable(product.getUnit());
-        Optional<ProductGroupModel> groupOptional = Optional.ofNullable(product.getProductGroup());
+        Optional<List<ProductGroupModel>> groupOptional = Optional.ofNullable(product.getProductGroups());
 
         Set<GroupColorModel> groupColorModelList = new HashSet<>();
         //verify if groupcolor exist in groupcolors table
@@ -155,9 +190,18 @@ public class ProductController {
         //group and color can be nullable
         if (groupOptional.isPresent()) {
 
-            ProductGroupModel group = groupOptional.get();
-            product.setProductGroup(group);
-            groupService.findById(Math.toIntExact(group.getId()));
+            List<ProductGroupModel> group = new ArrayList<>();
+
+
+            for (ProductGroupModel groupModel : groupOptional.get()) {
+                Optional<ProductGroupModel> optionalGroup =
+                        groupService.findById(Math.toIntExact(groupModel.getId()));
+
+                if(optionalGroup.isEmpty()) throw new GroupNotFoundException("Group with id not found");
+                group.add(optionalGroup.get());
+            }
+
+            product.setProductGroups(group);
         }
 
 

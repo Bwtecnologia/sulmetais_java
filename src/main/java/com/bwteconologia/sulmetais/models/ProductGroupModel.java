@@ -27,7 +27,7 @@ public class ProductGroupModel {
     private String groupDescription;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "productGroup")
+    @ManyToMany(mappedBy = "productGroups")
     private List<ProductModel> products;
 
     @Temporal(TemporalType.TIMESTAMP)
