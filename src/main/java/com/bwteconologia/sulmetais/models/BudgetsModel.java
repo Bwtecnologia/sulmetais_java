@@ -22,4 +22,7 @@ public class BudgetsModel {
     @ManyToOne
     @JoinColumn(name = "quiz_id")
     private QuizModel quizId;
+
+    @OneToOne
+    private ClientModel client;
 }

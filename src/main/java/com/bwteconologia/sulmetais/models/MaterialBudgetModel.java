@@ -127,7 +127,6 @@ public class MaterialBudgetModel {
                     default:
                         throw new MaterialOperandNotExistsException("This operand: " + formula.getOperation() + " doesnt exists!");
                 }
-
             } else {
                 switch (formula.getOperation()) {
                     case "plus":
