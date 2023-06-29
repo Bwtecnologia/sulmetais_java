@@ -20,19 +20,21 @@ public class ClientModel implements Serializable {
     @Column(nullable = false)
     private String cnpj;
 
-    @Column(nullable = false)
+    @Column()
     private String address;
 
     @Column(nullable = false)
     private String obra;
 
-    @OneToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "icms_id", nullable = false)
     private IcmsModel icms;
 
     @Column(nullable = false)
     private String agent;
 
-    @OneToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "payment_condition_id", nullable = false)
     private PaymentConditionModel paymentCondition;
 
     @Column(nullable = false)

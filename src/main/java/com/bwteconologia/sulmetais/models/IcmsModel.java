@@ -14,10 +14,10 @@ public class IcmsModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String name;
+    @Column(nullable = false)
+    private String state;
 
-    @Column
+    @Column(nullable = false)
     private double percentage;
 
 }

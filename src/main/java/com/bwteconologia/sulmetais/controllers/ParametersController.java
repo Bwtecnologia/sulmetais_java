@@ -36,7 +36,7 @@ public class ParametersController {
     }
 
     @PutMapping("/parameters/static")
-    private ResponseEntity<StaticParameterModel> updateParameters(StaticParameterModel staticParameterModel) {
+    private ResponseEntity<StaticParameterModel> updateParameters(@RequestBody StaticParameterModel staticParameterModel) {
         staticParameterModel.setId(1L);
         return ResponseEntity.ok(staticParameterService.save(staticParameterModel));
     }
@@ -57,13 +57,13 @@ public class ParametersController {
     }
 
     @PostMapping("/parameters/payment")
-    private ResponseEntity<PaymentConditionModel> insertPaymentCondition(PaymentConditionModel paymentConditionModel) {
+    private ResponseEntity<PaymentConditionModel> insertPaymentCondition(@RequestBody PaymentConditionModel paymentConditionModel) {
         return ResponseEntity.ok(paymentConditionService.save(paymentConditionModel));
     }
 
     @PutMapping("/parameters/payment/{id}")
     private ResponseEntity<PaymentConditionModel> updatePaymentCondition
-            (PaymentConditionModel paymentConditionModel, @PathVariable Long id) {
+            (@RequestBody PaymentConditionModel paymentConditionModel, @PathVariable Long id) {
 
         Optional<PaymentConditionModel> paymentConditionModelOptional = paymentConditionService.findById(id);
 
@@ -76,7 +76,7 @@ public class ParametersController {
     }
 
     @DeleteMapping("/parameters/payment/{id}")
-    private ResponseEntity<Void> deletePaymentCondition(@PathVariable Long id) {
+    private ResponseEntity<String> deletePaymentCondition(@PathVariable Long id) {
 
         Optional<PaymentConditionModel> paymentConditionModelOptional = paymentConditionService.findById(id);
 
@@ -84,7 +84,7 @@ public class ParametersController {
                 ("The payment condition with id " + id + " was not found");
 
         paymentConditionService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("The payment condition with id " + id + " was deleted");
     }
 
     @GetMapping("/parameters/icms")
@@ -103,12 +103,12 @@ public class ParametersController {
     }
 
     @PostMapping("/parameters/icms")
-    private ResponseEntity<IcmsModel> insertIcms(IcmsModel icmsModel) {
+    private ResponseEntity<IcmsModel> insertIcms(@RequestBody IcmsModel icmsModel) {
         return ResponseEntity.ok(icmsService.save(icmsModel));
     }
 
     @PutMapping("/parameters/icms/{id}")
-    private ResponseEntity<IcmsModel> updateIcms(IcmsModel icmsModel, @PathVariable Long id) {
+    private ResponseEntity<IcmsModel> updateIcms(@RequestBody IcmsModel icmsModel, @PathVariable Long id) {
 
         Optional<IcmsModel> icmsModelOptional = icmsService.findById(id);
 
