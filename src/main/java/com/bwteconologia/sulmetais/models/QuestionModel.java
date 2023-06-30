@@ -20,11 +20,20 @@ public class QuestionModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private int position;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "question_position",
+            joinColumns = { @JoinColumn(name = "question_id") },
+            inverseJoinColumns = { @JoinColumn(name = "position_id") }
+    )
+    private List<QuestionPositionModel> position;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "question_id")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "question_body_formula",
+            joinColumns = { @JoinColumn(name = "question_id") },
+            inverseJoinColumns = { @JoinColumn(name = "body_formula_id") }
+    )
     private List<BodyFormulaQuestionModel> bodyFormula;
 
     @Column(name = "question_type")

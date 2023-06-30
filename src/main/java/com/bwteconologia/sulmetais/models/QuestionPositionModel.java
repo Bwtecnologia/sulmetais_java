@@ -1,32 +1,23 @@
 package com.bwteconologia.sulmetais.models;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
+import java.io.Serializable;
 
 @Entity
 @Data
-@Table(name = "body_formula_question")
-public class BodyFormulaQuestionModel {
+public class QuestionPositionModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column()
+    private int position;
     @Column(name = "question_id", insertable = false, updatable = false)
     private Long questionId;
-
-    @OneToMany(cascade = CascadeType.ALL,  orphanRemoval = true)
-    @JoinColumn(name = "body_formula_question_id")
-    private List<FormulasQuestionModel> formulas;
-
     @Column(name = "quiz_id", insertable = false, updatable = false)
     private Long quizId;
-
-    @ManyToMany
-    @JoinColumn
-    private List<AnswerModel> answersIfTrue;
 
 }
