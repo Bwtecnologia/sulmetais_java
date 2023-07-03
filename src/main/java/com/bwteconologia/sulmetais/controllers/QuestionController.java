@@ -173,11 +173,11 @@ public class QuestionController {
 
         List<QuestionModel> questionModels = new ArrayList<>();
 
-        for(QuestionPositionModel questionPositionModel : optionalQuestionPositionModels.get()){
+        for (QuestionPositionModel questionPositionModel : optionalQuestionPositionModels.get()) {
 
-            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(questionPositionModel.getQuestionId()));
+            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(questionPositionModel.getQuestion().getId()));
             if (questionModelOptional.isEmpty())
-                throw new QuestionNotFoundException("The question whid ID: " + questionPositionModel.getQuestionId() + " don't exists!");
+                throw new QuestionNotFoundException("The question whid ID: " + questionPositionModel.getId() + " don't exists!");
 
             questionModels.add(questionModelOptional.get());
         }
@@ -198,12 +198,16 @@ public class QuestionController {
 
         for (QuestionPositionModel position : questionPositionModels) {
 
-            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(position.getQuestionId()));
+            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(position.getQuestion().getId()));
             if (questionModelOptional.isEmpty())
-                throw new QuestionNotFoundException("The question whid ID: " + position.getQuestionId() + " don't exists!");
+                throw new QuestionNotFoundException("The question whid ID: " + position.getId() + " don't exists!");
 
-            position.setQuizId(quizId);
+            Optional<QuestionPositionModel> positionOptionalToExclude = questionPositionService.findByPositionAndQuizAndQuestion
+                    (position.getPosition(), quizModelOptional.get(), questionModelOptional.get());
+            if(positionOptionalToExclude.isPresent()) questionPositionService.deleteById(positionOptionalToExclude.get().getId());
 
+            position.setQuiz(quizModelOptional.get());
+            position.setQuestion(questionModelOptional.get());
             positionList.add(position);
         }
 

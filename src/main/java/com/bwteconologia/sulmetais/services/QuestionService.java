@@ -34,9 +34,9 @@ public class QuestionService implements IQuestion {
     public Optional<QuestionModel> findByDescription(String description) {
         return questionRepository.findByDescription(description);
     }
-    public Optional<List<QuestionModel>> findAllByQuizOrderByPosition(QuizModel quizid) {
-        return questionRepository.findAllByQuizOrderByPosition(quizid);
-    };
+//    public Optional<List<QuestionModel>> findAllByQuizOrderByPosition(QuizModel quizid) {
+//        return questionRepository.findAllByQuizOrderByPosition(quizid);
+//    };
 
     @Override
     public void deleteById(int id) {

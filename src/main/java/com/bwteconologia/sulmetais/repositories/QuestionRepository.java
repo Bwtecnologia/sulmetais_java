@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<QuestionModel, Integer> {
 
-    Optional<List<QuestionModel>>findAllByQuizOrderByPosition(QuizModel quizId);
+//    Optional<List<QuestionModel>>findAllByQuizOrderByPosition(QuizModel quizId);
 
     Optional<QuestionModel> findByDescription(String description);
 }

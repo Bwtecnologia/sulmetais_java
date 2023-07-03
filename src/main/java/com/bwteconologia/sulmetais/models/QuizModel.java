@@ -41,6 +41,8 @@ public class QuizModel {
     )
     private Set<QuestionModel> questions;
 
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestionPositionModel> questionPosition;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
