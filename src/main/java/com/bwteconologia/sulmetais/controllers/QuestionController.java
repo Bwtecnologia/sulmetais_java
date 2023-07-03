@@ -203,7 +203,7 @@ public class QuestionController {
                 throw new QuestionNotFoundException("The question whid ID: " + position.getId() + " don't exists!");
 
             Optional<QuestionPositionModel> positionOptionalToExclude = questionPositionService.findByPositionAndQuizAndQuestion
-                    (position.getPosition(), quizModelOptional.get(), questionModelOptional.get());
+                    (position.getPosition(), quizModelOptional.get());
             if(positionOptionalToExclude.isPresent()) questionPositionService.deleteById(positionOptionalToExclude.get().getId());
 
             position.setQuiz(quizModelOptional.get());

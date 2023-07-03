@@ -32,7 +32,7 @@ public class QuestionPositionService {
         return questionPositionRepository.findAll();
     }
 
-    public Optional<QuestionPositionModel> findByPositionAndQuizAndQuestion(int position, QuizModel quiz, QuestionModel question) {
-        return questionPositionRepository.findByPositionAndQuizAndQuestion(position, quiz, question);
+    public Optional<QuestionPositionModel> findByPositionAndQuizAndQuestion(int position, QuizModel quiz) {
+        return questionPositionRepository.findByPositionAndQuiz(position, quiz);
     }
 }
