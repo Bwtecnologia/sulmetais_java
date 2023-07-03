@@ -20,12 +20,8 @@ public class QuestionModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "question_position",
-            joinColumns = { @JoinColumn(name = "question_id") },
-            inverseJoinColumns = { @JoinColumn(name = "position_id") }
-    )
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question" ,orphanRemoval = true)
+    @JsonIgnore
     private List<QuestionPositionModel> position;
 
     @ManyToMany(cascade = CascadeType.ALL)
