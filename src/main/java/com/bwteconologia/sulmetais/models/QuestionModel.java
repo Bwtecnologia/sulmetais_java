@@ -24,12 +24,7 @@ public class QuestionModel {
     @JsonIgnore
     private List<QuestionPositionModel> position;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "question_body_formula",
-            joinColumns = { @JoinColumn(name = "question_id") },
-            inverseJoinColumns = { @JoinColumn(name = "body_formula_id") }
-    )
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BodyFormulaQuestionModel> bodyFormula;
 
     @Column(name = "question_type")

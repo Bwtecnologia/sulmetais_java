@@ -14,5 +14,6 @@ import java.util.Optional;
 public interface QuestionPositionRepository extends JpaRepository<QuestionPositionModel, Long> {
     Optional<List<QuestionPositionModel>> findAllByQuizId(Long quizId);
 
+    void deleteAllByQuiz(QuizModel quiz);
     Optional<QuestionPositionModel> findByPositionAndQuizAndQuestion(int position, QuizModel quiz, QuestionModel question);
 }

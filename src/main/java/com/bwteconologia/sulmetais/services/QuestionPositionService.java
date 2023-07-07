@@ -24,6 +24,13 @@ public class QuestionPositionService {
         return questionPositionRepository.findAllByQuizId(quizId);
     }
 
+    public void deleteAllByQuiz(QuizModel quiz) {
+        questionPositionRepository.deleteAllByQuiz(quiz);
+    }
+    public Optional<QuestionPositionModel> findById(Long id) {
+        return questionPositionRepository.findById(id);
+    }
+
     public void deleteById(Long id) {
         questionPositionRepository.deleteById(id);
     }

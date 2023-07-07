@@ -10,10 +10,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.PathParam;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -94,7 +96,107 @@ public class QuestionController {
         }
     }
 
-    @PutMapping("/questions/{id}/formula")
+    @GetMapping("/questions/positionmodel")
+    public ResponseEntity<List<QuestionPositionModel>> getQuestionPositionById(@PathParam(value = "quizId") Long quizId) {
+
+        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+        if (quizModelOptional.isEmpty())
+            throw new QuizNotFoundException("The quiz with ID: " + quizId + " don't exists!");
+
+        Optional<List<QuestionPositionModel>> optionalQuestionPositionModels = questionPositionService.findAllQuestionsByQuizId(quizId);
+
+        if (optionalQuestionPositionModels.isEmpty())
+            throw new QuestionNotFoundException("The quiz with ID: " + quizId + " don't have questions!");
+
+
+        return ResponseEntity.ok(optionalQuestionPositionModels.get());
+    }
+
+    @GetMapping("/questions/position")
+    public ResponseEntity<List<QuestionModel>> returnAllByQuizOrderByPosition(@RequestParam Long quizId) {
+
+        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+        if (quizModelOptional.isEmpty())
+            throw new QuizNotFoundException("The quiz with ID: " + quizId + " don't exists!");
+
+        Optional<List<QuestionPositionModel>> optionalQuestionPositionModels = questionPositionService.findAllQuestionsByQuizId(quizId);
+
+        if (optionalQuestionPositionModels.isEmpty())
+            throw new QuestionNotFoundException("The quiz with ID: " + quizId + " don't have questions!");
+
+        List<QuestionModel> questionModels = new ArrayList<>();
+
+        for (QuestionPositionModel questionPositionModel : optionalQuestionPositionModels.get()) {
+
+            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(questionPositionModel.getQuestion().getId()));
+            if (questionModelOptional.isEmpty())
+                throw new QuestionNotFoundException("The question with ID: " + questionPositionModel.getId() + " don't exists!");
+
+            questionModels.add(questionModelOptional.get());
+        }
+
+        return ResponseEntity.ok(questionModels);
+    }
+
+    @DeleteMapping("/questions/positionmodel/{id}")
+    public ResponseEntity<String> deletePositionById(@PathVariable Long id) {
+
+        Optional<QuestionPositionModel> questionPositionModelOptional = questionPositionService.findById(id);
+        if (questionPositionModelOptional.isEmpty())
+            throw new QuestionNotFoundException("The question position with ID: " + id + " don't exists!");
+
+        questionPositionService.deleteById(id);
+
+        return ResponseEntity.ok("The question position with ID: " + id + " was deleted!");
+    }
+
+    @Transactional
+    @PostMapping("/questions/position")
+    public ResponseEntity<List<QuestionPositionModel>>
+    insertPositionsForQuestions(@RequestParam Long quizId,
+                                @RequestBody List<QuestionPositionModel> questionPositionModels) {
+
+        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
+        if (quizModelOptional.isEmpty())
+            throw new QuizNotFoundException("The quiz whid ID: " + quizId + " don't exists!");
+
+        List<QuestionPositionModel> positionList = new ArrayList<>();
+
+        try {
+            questionPositionService.deleteAllByQuiz(quizModelOptional.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (QuestionPositionModel position : questionPositionModels) {
+
+            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(position.getQuestion().getId()));
+            if (questionModelOptional.isEmpty())
+                throw new QuestionNotFoundException("The question whid ID: " + position.getId() + " don't exists!");
+
+            Optional<QuestionPositionModel> positionOptionalToExclude = questionPositionService.findByPositionAndQuizAndQuestion
+                    (position.getPosition(), quizModelOptional.get(), questionModelOptional.get());
+            if (positionOptionalToExclude.isPresent())
+                questionPositionService.deleteById(positionOptionalToExclude.get().getId());
+
+            position.setQuiz(quizModelOptional.get());
+            position.setQuestion(questionModelOptional.get());
+            positionList.add(position);
+        }
+
+        try {
+            questionPositionService.deleteAllByQuiz(quizModelOptional.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for (QuestionPositionModel position : positionList) {
+            questionPositionService.save(position);
+        }
+
+        return ResponseEntity.ok(positionList);
+    }
+
+    @PostMapping("/questions/{id}/formula")
     public ResponseEntity<QuestionModel> insertFormulaInQuestion
             (@PathVariable Long id,
              @PathParam(value = "quizId") Long quizId,
@@ -115,7 +217,6 @@ public class QuestionController {
         if (bodyFormulaQuestion.isEmpty())
             throw new FormulaQuestionWrongAddException("You need one body formula to add formula");
 
-        //verifica
         for (BodyFormulaQuestionModel body : bodyFormula) {
 
             if (body.getFormulas() == null)
@@ -141,8 +242,11 @@ public class QuestionController {
 
                 //verifica se essa question está dentro do quiz
                 boolean questionIsInTheQuiz = false;
-                for (QuestionModel question : optionalQuiz.get().getQuestions()) {
-                    if (question.getId() == formula.getQuestion().getId()) questionIsInTheQuiz = true;
+                for (QuestionPositionModel question : optionalQuiz.get().getQuestionPosition()) {
+                    if (question.getId() == formula.getQuestion().getId()) {
+                        questionIsInTheQuiz = true;
+                        break;
+                    }
 
                 }
                 if (!questionIsInTheQuiz)
@@ -152,75 +256,21 @@ public class QuestionController {
         }
         QuestionModel question = optionalQuestion.get();
 
-        question.settBodyFormula(bodyFormulaQuestion);
+        List<BodyFormulaQuestionModel> bodyFormulaListForSave = question.getBodyFormula();
+        for(BodyFormulaQuestionModel body : bodyFormula) {
+            bodyFormulaListForSave.add(body);
+        }
+
+        question.settBodyFormula(bodyFormulaListForSave);
         question.setFormula(true);
         questionService.save(question);
 
         return ResponseEntity.ok(question);
     }
 
-    @GetMapping("/questions/position")
-    public ResponseEntity<List<QuestionModel>> returnAllByQuizOrderByPosition(@RequestParam Long quizId) {
-
-        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
-        if (quizModelOptional.isEmpty())
-            throw new QuizNotFoundException("The quiz whid ID: " + quizId + " don't exists!");
-
-        Optional<List<QuestionPositionModel>> optionalQuestionPositionModels = questionPositionService.findAllQuestionsByQuizId(quizId);
-
-        if (optionalQuestionPositionModels.isEmpty())
-            throw new QuestionNotFoundException("The quiz whid ID: " + quizId + " don't have questions!");
-
-        List<QuestionModel> questionModels = new ArrayList<>();
-
-        for (QuestionPositionModel questionPositionModel : optionalQuestionPositionModels.get()) {
-
-            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(questionPositionModel.getQuestion().getId()));
-            if (questionModelOptional.isEmpty())
-                throw new QuestionNotFoundException("The question whid ID: " + questionPositionModel.getId() + " don't exists!");
-
-            questionModels.add(questionModelOptional.get());
-        }
-
-        return ResponseEntity.ok(questionModels);
-    }
-
-    @PostMapping("/questions/position")
-    public ResponseEntity<List<QuestionPositionModel>>
-    insertPositionsForQuestions(@RequestParam Long quizId,
-                                @RequestBody List<QuestionPositionModel> questionPositionModels) {
-
-        Optional<QuizModel> quizModelOptional = quizService.findById(Math.toIntExact(quizId));
-        if (quizModelOptional.isEmpty())
-            throw new QuizNotFoundException("The quiz whid ID: " + quizId + " don't exists!");
-
-        List<QuestionPositionModel> positionList = new ArrayList<>();
-
-        for (QuestionPositionModel position : questionPositionModels) {
-
-            Optional<QuestionModel> questionModelOptional = questionService.findById(Math.toIntExact(position.getQuestion().getId()));
-            if (questionModelOptional.isEmpty())
-                throw new QuestionNotFoundException("The question whid ID: " + position.getId() + " don't exists!");
-
-            Optional<QuestionPositionModel> positionOptionalToExclude = questionPositionService.findByPositionAndQuizAndQuestion
-                    (position.getPosition(), quizModelOptional.get(), questionModelOptional.get());
-            if(positionOptionalToExclude.isPresent()) questionPositionService.deleteById(positionOptionalToExclude.get().getId());
-
-            position.setQuiz(quizModelOptional.get());
-            position.setQuestion(questionModelOptional.get());
-            positionList.add(position);
-        }
-
-        for (QuestionPositionModel position : positionList) {
-            questionPositionService.save(position);
-        }
-
-        return ResponseEntity.ok(positionList);
-    }
-
     @GetMapping("/questions/{id}/formula/calculator")
     public ResponseEntity<List<AnswerModel>> returnResultOfFormulaCalc
-            (@PathVariable Long id, @RequestBody List<AnswerQuizModel> answersQuiz) {
+            (@PathVariable Long id, @PathParam("quizId") int quizId, @RequestBody List<AnswerQuizModel> answersQuiz) {
 
 
         Optional<QuestionModel> optionalQuestion = questionService.findById(Math.toIntExact(id));
@@ -228,12 +278,17 @@ public class QuestionController {
         QuestionModel question = optionalQuestion.get();
         if (!question.isFormula())
             throw new QuestionNotFoundException("This question doesn't have formula to calculate!");
+        Optional<QuizModel> optionalQuiz = quizService.findById(quizId);
+        if (optionalQuiz.isEmpty()) throw new QuizNotFoundException("The quiz with ID: " + quizId + " don't exists!");
+
 
         if (answersQuiz.isEmpty()) throw new FormulaQuestionErrorInCalculatingException
                 ("You need to pass the answers of quiz to get the response for formula!");
-
         List<AnswerModel> answerList = question.getAnswers();
 
+        List<BodyFormulaQuestionModel> bodyFormulaFilteredList = question.getBodyFormula()
+                .stream()
+                .filter(quizIdFromFormula -> quizIdFromFormula.getQuizId() == quizId).toList();
 
         //first see OR
         for (BodyFormulaQuestionModel bodyFormula : question.getBodyFormula()) {
