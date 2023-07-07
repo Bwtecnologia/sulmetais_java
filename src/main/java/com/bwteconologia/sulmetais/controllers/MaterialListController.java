@@ -117,7 +117,7 @@ public class MaterialListController {
         return materialListService.save(material);
     }
 
-    @DeleteMapping("/materia/{id}")
+    @DeleteMapping("/material/{id}")
     String deleteById(@PathVariable Long id){
 
         Optional<MaterialListModel> materialListModelOptional = materialListService.findById(id);

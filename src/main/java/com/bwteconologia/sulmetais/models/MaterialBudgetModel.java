@@ -23,6 +23,9 @@ public class MaterialBudgetModel {
     @Column
     private String materialName;
 
+    @OneToOne
+    private ProductModel finalProduct;
+
     @Column
     private String unity;
 
