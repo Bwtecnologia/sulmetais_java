@@ -16,6 +16,10 @@ public class MaterialListModel {
 
     @OneToOne
     @JoinColumn
+    ProductModel finalProduct;
+
+    @OneToOne
+    @JoinColumn
     ProductModel product;
 
     @OneToOne

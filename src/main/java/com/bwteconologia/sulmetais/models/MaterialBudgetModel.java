@@ -24,6 +24,7 @@ public class MaterialBudgetModel {
     private String materialName;
 
     @OneToOne
+    @JoinColumn
     private ProductModel finalProduct;
 
     @Column
