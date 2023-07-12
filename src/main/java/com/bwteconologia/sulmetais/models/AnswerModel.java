@@ -24,13 +24,13 @@ public class AnswerModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "answer_formula", nullable = false)
+    @Column(name = "answer_formula")
     private String formula;
 
     @Column(name = "answer_description", nullable = false)
     private String description;
 
-    @Column(name = "answer_value", nullable = false)
+    @Column(name = "answer_value")
     private float value;
 
     @OneToOne
@@ -39,9 +39,7 @@ public class AnswerModel {
 
     @ManyToOne
     @JoinColumn(name = "question_id")
-    @JsonIgnore
     private QuestionModel question;
-
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

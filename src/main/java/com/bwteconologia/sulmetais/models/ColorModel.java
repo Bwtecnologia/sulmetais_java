@@ -25,18 +25,11 @@ public class ColorModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "color_type", nullable = false)
-    private String type;
-
     @Column(name = "color_description", nullable = false)
     private String description;
 
     @Column(name = "color_value", nullable = false)
     private float value;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "color")
-    private List<ProductModel> products;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

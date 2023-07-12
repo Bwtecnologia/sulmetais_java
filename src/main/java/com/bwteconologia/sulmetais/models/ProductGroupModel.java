@@ -1,6 +1,5 @@
 package com.bwteconologia.sulmetais.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,8 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "groups")
-public class GroupModel {
+@Table(name = "group_product")
+public class ProductGroupModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +27,7 @@ public class GroupModel {
     private String groupDescription;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "productGroup")
     private List<ProductModel> products;
 
     @Temporal(TemporalType.TIMESTAMP)

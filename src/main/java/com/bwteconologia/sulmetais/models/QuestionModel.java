@@ -2,17 +2,13 @@ package com.bwteconologia.sulmetais.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +20,13 @@ public class QuestionModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question" ,orphanRemoval = true)
+    @JsonIgnore
+    private List<QuestionPositionModel> position;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<BodyFormulaQuestionModel> bodyFormula;
+
     @Column(name = "question_type")
     private String type;
 
@@ -34,14 +37,17 @@ public class QuestionModel {
     @Column(name = "created_at")
     private Date createdAt;
 
+    @Column
+    @JoinColumn
+    private boolean formula;
+
     @OneToMany(mappedBy = "question")
     @JsonIgnore
     private List<AnswerModel> answers;
 
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
+    @ManyToMany(mappedBy = "questions")
     @JsonIgnore
-    private QuizModel quiz;
+    private List<QuizModel> quiz;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
@@ -50,6 +56,7 @@ public class QuestionModel {
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
+        formula = false;
     }
 
     @PreUpdate
@@ -57,4 +64,11 @@ public class QuestionModel {
         updatedAt = new Date();
     }
 
+
+    public void settBodyFormula(List<BodyFormulaQuestionModel> bodyFormula) {
+        if(!this.bodyFormula.isEmpty()) this.bodyFormula.clear();
+        if(bodyFormula != null) {
+            this.bodyFormula.addAll(bodyFormula);
+        }
+    }
 }

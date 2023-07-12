@@ -67,6 +67,13 @@ public class AnswerController {
         return ResponseEntity.ok(savedAnswers);
     }
 
+    @PostMapping(value = "/answers/bodyformula")
+    public ResponseEntity<AnswerModel> addAnswerForUseBodyFormula(@RequestBody AnswerModel answer) {
+
+        AnswerModel savedAnswers = answerService.save(answer);
+        return ResponseEntity.ok(savedAnswers);
+    }
+
     @PutMapping(value = "/answers/{id}")
     public ResponseEntity<AnswerModel> updateAnswer(@PathVariable("id") Long id, @RequestBody AnswerModel answersUpdate) {
         AnswerModel answer = answerService.findById(Math.toIntExact(id))

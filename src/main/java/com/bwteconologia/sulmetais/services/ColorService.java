@@ -1,5 +1,6 @@
 package com.bwteconologia.sulmetais.services;
 
+import com.bwteconologia.sulmetais.dto.colors.ColorsDescriptionGroupsColorDTO;
 import com.bwteconologia.sulmetais.interfaces.IColor;
 import com.bwteconologia.sulmetais.models.ColorModel;
 import com.bwteconologia.sulmetais.repositories.ColorRepository;
@@ -33,6 +34,13 @@ public class ColorService implements IColor {
         return colorRepository.findColorByDescription(description);
     }
 
+    public List<ColorsDescriptionGroupsColorDTO> getAllInfo(){
+        return colorRepository.getAllInfo();
+    }
+
+    public ColorsDescriptionGroupsColorDTO getOneInfo(Long id){
+        return colorRepository.getOneInfo(id);
+    }
 
     @Override
     public void deleteById(int id) {

@@ -1,18 +1,16 @@
 package com.bwteconologia.sulmetais.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-@Getter
-@Setter
-@Accessors(chain=true)
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -39,20 +37,26 @@ public class ProductModel {
     private Boolean productIntermediary;
     @Column(name = "product_final")
     private Boolean productFinal;
-    @Column(name = "Product_price", nullable = false)
+    @Column(name = "Product_price")
     private Float productPrice;
 
     @ManyToOne
-    @JoinColumn(name = "product_unit_id")
+    @JoinColumn(name = "product_unit_id", nullable = false)
     private UnitModel unit;
 
     @ManyToOne
-    @JoinColumn(name = "product_color_id")
-    private ColorModel color;
-
-    @ManyToOne
     @JoinColumn(name = "group_type_id")
-    private GroupModel group;
+    private ProductGroupModel productGroup;
+
+    @ManyToMany
+    @JoinTable(
+            name = "group_colors_products",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns =  @JoinColumn(name = "group_color_id")
+    )
+    private Set<GroupColorModel> groupColors = new HashSet<>();
+
+
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
@@ -71,4 +75,5 @@ public class ProductModel {
     protected void onUpdate() {
         updatedAt = new Date();
     }
+
 }

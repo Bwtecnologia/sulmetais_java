@@ -15,6 +15,10 @@ public class ProductService implements IProduct {
     @Autowired
     ProductRepository productRepository;
 
+    public List<ProductModel> getAllProductsPrimary() {
+        return productRepository.findAllByProductPrimary(Boolean.TRUE);
+    }
+
     @Override
     public List<ProductModel> getAllProducts() {
         return productRepository.findAll();

@@ -2,6 +2,7 @@ package com.bwteconologia.sulmetais.services;
 
 import com.bwteconologia.sulmetais.interfaces.IQuestion;
 import com.bwteconologia.sulmetais.models.QuestionModel;
+import com.bwteconologia.sulmetais.models.QuizModel;
 import com.bwteconologia.sulmetais.repositories.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,9 @@ public class QuestionService implements IQuestion {
     public Optional<QuestionModel> findByDescription(String description) {
         return questionRepository.findByDescription(description);
     }
-
-
+//    public Optional<List<QuestionModel>> findAllByQuizOrderByPosition(QuizModel quizid) {
+//        return questionRepository.findAllByQuizOrderByPosition(quizid);
+//    };
 
     @Override
     public void deleteById(int id) {
