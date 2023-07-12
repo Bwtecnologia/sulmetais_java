@@ -7,6 +7,7 @@ import com.bwteconologia.sulmetais.exceptions.UnitNotFoundException;
 import com.bwteconologia.sulmetais.exceptions.group_color.GroupColorNotExistsException;
 import com.bwteconologia.sulmetais.models.*;
 import com.bwteconologia.sulmetais.services.*;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,12 @@ public class ProductController {
 
     @Autowired
     private GroupColorService groupColorService;
+
+    @GetMapping(value = "/products/primary")
+    public ResponseEntity<List<ProductModel>> getAllProductsPrimary() {
+        List<ProductModel> products = productService.getAllProductsPrimary();
+        return ResponseEntity.ok(products);
+    }
 
     @GetMapping(value = "/products")
     public ResponseEntity<List<ProductModel>> getAllProducts() {
